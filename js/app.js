@@ -54,7 +54,7 @@
         });
 
 
-        L.control.scale().addTo(map);
+        L.control.scale({ position: 'bottomright' }).addTo(map);
 
         geocoder = L.mapbox.geocoder('mapbox.places-v1');
 
