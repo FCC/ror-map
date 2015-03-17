@@ -1,314 +1,128 @@
 <!DOCTYPE html>
 
-<html class="no-js" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="description" content="E-rate Schools">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Rate of Return Map « FCC</title>
-<link rel="shortcut icon" href="img/fcc_favicon.ico" type="image/x-icon">
-<link rel="stylesheet" href="css/bootstrap.min.css">
-<link rel="stylesheet" href="css/app-theme.css">
-<style type="text/css">
-html, body { width: 100%; height: 100%; padding: 0; margin: 0; }
-main { margin-top: 20px; }
-#map { height: 600px; top: 0; bottom: 0; border: solid 1px #000; max-width: 100%; width: 100%; }
+<html class="no-js" lang="en">
+<head>
 
-
-</style>
+	<title>Rate of Return Map « FCC</title>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="description" content="Rate of Return Map « FCC">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="author" content="FCC GIS">	
+	
+	<link rel="shortcut icon" href="img/fcc_favicon.ico" type="image/x-icon">
+	
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="//api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.css" rel="stylesheet" />
+	<link href="//code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+	<link rel="stylesheet" href="css/app.css">
 
 <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
       <script src="js/libs/selectivizr-min.js"></script>
-    <![endif]-->
+<![endif]-->
 
 </head>
 <body>
-<header>
-    <nav class="container" role="navigation">
-        <div class="row">
-            <div class="col-xs-10 col-sm-9"> <a href="http://www.fcc.gov/"><img class="logo" src="img/logo-fcc.png" alt="Go to the Federal Communications Commission homepage at www.fcc.gov" title="Go to the Federal Communications Commission homepage at www.fcc.gov"></a>
-                <h1>Rate of Return Map</h1>
-            </div>
-            <div class="col-xs-2 col-sm-3"> <a class="pull-right" href="javascript: void(0);" data-toggle="modal" data-target="#modal-about"><span class="icon-help-2"></span><span class="sr-only">About/Help</span></a> </div>
-        </div>
-    </nav>
-</header>
-<main class="container">
-    <div class="row">
-        
-            <div class="col-md-9">
-                <form >
-                    <div id="search-field" class="input-group" style="margin-bottom: 10px;">
-                        <input id="input-location" class="form-control" type="search" placeholder="Enter Location">
-                        <span class="input-group-btn">
-                        <button id="input-search" class="btn btn-primary" type="submit">Search</button>
-                        </span> </div>
-                </form>
-                <div class="map-container">
-					<button title="" data-placement="right" data-toggle="tooltip" id="btn-geoLocation" type="button" class="btn-geoLocation btn btn-default st" data-original-title="Get Current Location" style="top: 115px"><span class="icon-locate-1"></span><span class="sr-only">Get Current Location</span></button>
-					<button title="" data-placement="right" data-toggle="tooltip" id="btn-nationLocation" type="button" class="btn-nationLocation btn btn-default st" data-original-title="Nationwide" style="top: 150px"><span class="icon-nation-1"></span><span class="sr-only">Nationwide</span></button>
-					<div id="map">
-                    </div>
-
-
+	<header>
+		<nav class="container" role="navigation">
+			<div class="row">
+				<div class="col-xs-10 col-sm-9"> <a href="http://www.fcc.gov/"><img class="logo" src="img/logo-fcc.png" alt="Go to the Federal Communications Commission homepage at www.fcc.gov" title="Go to the Federal Communications Commission homepage at www.fcc.gov"></a>
+					<h1>Rate of Return Map</h1>
 				</div>
-            </div>
+				<div class="col-xs-2 col-sm-3"> <a class="pull-right" href="javascript: void(0);" data-toggle="modal" data-target="#modal-about"><span class="icon-help-2"></span><span class="sr-only">About/Help</span></a> </div>
+			</div>
+		</nav>
+	</header>
+	<main class="container">
+		<div class="row">
+			
+			<div class="col-md-9">
+				<form >
+					<div id="search-field" class="input-group" style="margin-bottom: 10px;">
+						<input id="input-location" class="form-control" type="search" placeholder="Enter Location">
+						<span class="input-group-btn">
+						
+						<button class="btn btn-default" type="submit" id="input-search" title="Search"><span class="glyphicon glyphicon-search"></span><span class="sr-only">Search</span></button>
+						</span> 
+					</div>
+				</form>
+				<div class="map-container">
+					<button title="Get Current Location" data-placement="right" data-toggle="tooltip" id="btn-geoLocation" type="button" class="btn-geoLocation btn btn-default st" data-original-title="Get Current Location"><span class="icon-locate-1"></span><span class="sr-only">Get Current Location</span></button>
+					<button title="Nationwide" data-placement="right" data-toggle="tooltip" id="btn-nationLocation" type="button" class="btn-nationLocation btn btn-default st" data-original-title="Nationwide"><span class="icon-nation-1"></span><span class="sr-only">Nationwide</span></button>
+					<div id="map">
 
-           
-       
-    </div>
-</main>
-<footer>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12"> <em>*** Non-Public:  For Internal Use Only ***</em> </div>
-        </div>
-    </div>
-</footer>
+						<!-- tooltip box -->
+						<div class="col-md-3" id="tooltip_box_div" style="position: absolute; height: 70px; bottom: 22px; right: 0px; z-index: 999">
+							<div id="feature_display_div" class="panel panel-default" style="margin: 0px; height: 100%; width: 100%; padding: 10px;  border: solid 1px #000">
+							</div>
+						</div>
 
-<!-- download box -->
-<div class="col-md-3" id="download_display_div" style="position: absolute; top: -10000px; left: -10000px; z-index: 999">
-    <div class="panel panel-default" style="margin: 0px; border: solid 1px #000">
-        <span style="margin-left: 100px">Download Data</span> <span id="x-download" style="float: right; margin-right: 15px; cursor: pointer">X</span>
-        <div class="panel-body">
-            <span id="download-desc"></span>
-                   <select id="download_select">
-                    <option value="">--data type--</option>
-                    <option value="shapefile">Shapefile</option>
-                    <option value="geojson">GeoJSON</option>
-                    <option value="kml">KML</option>
-                    <option value="csv">CSV</option>
-                </select>
-                <button id="btn-download">GO</button>
-
-           
-        </div>
-    </div>
-</div>
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script> 
-<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.0.min.js"><\/script>')</script> 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script> 
-<script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.js'></script>
-<link href='http://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.css' rel='stylesheet' />
+						<div style="position: absolute; z-index: 1001; top: 10px; left: 100px;">
+							<button id="btn-street" class="btn-baselayer-control btn-baselayer-control-selected">Street Map</button>
+							<button id="btn-satellite" class="btn-baselayer-control">Satellite</button>
+							<button id="btn-topo" class="btn-baselayer-control">Terrain</button>
+						</div>
 
 
-<script type="text/javascript">
+						<div id="download-btn-small" style="position: absolute; width: 28px; height: 28px; top: 50px; right: 10px; background-color: #ffffff; border: solid 1px #888888; border-radius: 3px; text-align: center; padding: 5px; cursor: pointer; z-index: 1" onclick="showDownloadMenuBox()" title="Download Data">
+						<span class="ui-icon ui-icon-circle-arrow-s"></span>
+						</div>                                                
 
-    var map;
-    var shownPolygon;
-    var clickedPolygon;
-    var dataNow;
-    var dataCredential = {};
-    var xNow;
-    var yNow;
+						<div id="download-menu-box"  style="position: absolute; width: 400px; top: 50px; right: 10px; background-color: #ffffff; border: solid 1px #888888; border-radius: 3px; text-align: center; padding: 5px; display: none; cursor: pointer; z-index: 1">
+							<span class="ui-icon ui-icon-closethick" onclick="hideDownloadMenuBox()" style="float: right; cursor: default"></span>
+							<p>
+							<select id="download_select"><option value="">--data type--</option><option value="shapefile">Shapefile</option><option value="geojson">GeoJSON</option><option value="kml">KML</option><option value="csv">CSV</option></select> &nbsp;
+							<input type="radio" name="download-type" value="area" checked>One Area
+							<input type="radio" name="download-type" value="all">All Areas
+							&nbsp;&nbsp;<button id="btn-download" title="click to download"><span class="ui-icon ui-icon-circle-triangle-e"></span></button>
+							<p>
+							<span id="area-display" style="font-size: 12px;"></span>
+							<p>
+							<span id="warning-display" style="font-size: 12px; color: #f00">Please click on map to select an area to download</span>
+							
+						</div>
 
-    var drawnPolygonOption = {
-        'color': '#FFFFFF',
-        'weight': 3,
-        'fillOpacity': 1,
-        zIndex: 999
-    }
+						<div id="legend-btn-small" style="position: absolute; width: 28px; height: 28px; bottom: 70px; left: 5px; background-color: #ffffff; border: solid 1px #888888; border-radius: 3px; text-align: center; padding: 5px; cursor: pointer; z-index: 1" onclick="showMapLegendBox()" title="Map Legend">
+						<span class="ui-icon ui-icon-note"></span>
+						</div> 
+						
+						<div id="map-legend-box"  style="position: absolute; width: 150px; height: 165px; bottom: 70px; left: 5px; background-color: #eee; border: solid 1px #888888; border-radius: 5px; text-align: left; padding: 5px; display: none; cursor: default; z-index: 1">
+							<span class="ui-icon ui-icon-note" style="float: left"> </span> &nbsp; <span style="float: left; color: #000">Map Legend</span>   <span class="ui-icon ui-icon-closethick" onclick="hideMapLegendBox()" style="float: right; cursor: default"></span>
+							<p>
+							<p>
+							<table>
+							<tr><td><div style="width: 25px; height: 25px; background-color: #b0e27a; border: solid 2px #000; display: inline-block;"></div></td> <td style="vertical-align: center; padding: 10px;"> SAC Areas </td></tr>
+							<tr><td><div style="width: 25px; height: 25px; background-color: #b0e27a; border: solid 1px #fff; display: inline-block;"></div></td><td style="vertical-align: center; padding: 10px;"> SA Areas </td></tr>
+							<tr><td style="text-align: center"><div style="width: 15px; height: 15px; background-color: #fff; border: solid 1px #000; display: inline-block; border-radius: 20px;"></div></td><td style="vertical-align: center; padding: 10px;">Central Offices </td></tr>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>     
+		</div>
+	</main>
 
-    var clickedPolygonOption = {
-        'color': 'FFFFFF',
-        'weight': 10,
-        'fillOpacity': 1,
-        zIndex: 999
-    }
+	<div id="display"></div>
 
-    var southWest = L.latLng(24.525841, -126.597970),
-        northEast = L.latLng(50.957531, -64.722975),
-        bounds_us = L.latLngBounds(southWest, northEast);
-
-    function createMap() {
-        L.mapbox.accessToken = 'pk.eyJ1IjoiY29tcHV0ZWNoIiwiYSI6InMyblMya3cifQ.P8yppesHki5qMyxTc2CNLg';
-        map = L.mapbox.map('map', 'nbm.i2op87g0', { attributionControl: false, maxZoom: 11})
-            .fitBounds(bounds_us);
-
-        L.mapbox.tileLayer('fcc.7zcvriap').setZIndex(999).addTo(map);
-
-        L.control.scale().addTo(map);
-
-        geocoder = L.mapbox.geocoder('mapbox.places-v1');
-
-        L.control.layers({
-            'Street': L.mapbox.tileLayer('fcc.k74ed5ge').addTo(map),
-            'Satellite': L.mapbox.tileLayer('computech.jh7ic2j0'),
-            'Terrain': L.mapbox.tileLayer('computech.jh7ih1gk')
-        }).addTo(map);
-
-        var gridLayer = L.mapbox.gridLayer('fcc.7zcvriap', {'follow': true});
-        map.addLayer(gridLayer);
-        map.addControl(L.mapbox.gridControl(gridLayer));
-
-        map.addControl(L.mapbox.geocoderControl('mapbox.places').setPosition('topleft'))
-
-        map.on("mousemove", function(e){
-
-            var lat = e.latlng.lat;
-            var lng = e.latlng.lng;
-
-            var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas&maxFeatures=1&outputFormat=text/javascript&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
-
-            $.ajax({
-                type: "GET",
-                url: url,
-                dataType: "jsonp",
-                jsonpCallback: "parseResponse",
-                success: function(data) {
-                    displayPolygon(data);
-                }
-            });
-        });
-
-    }
-
-
-    function displayPolygon(data) {
-
-        if (map.hasLayer(shownPolygon)) {
-        map.removeLayer(shownPolygon)
-        }
-        shownPolygon = L.mapbox.featureLayer(data).setStyle(drawnPolygonOption).addTo(map);
-        shownPolygon.on("click", function(e) {
-            clickPolygon(e);
-        });
-
-
-        dataNow = data;
-        shownPolygon.setZIndex(999);
-    }
-
-    function clickPolygon(e) {
-
-        var text = "SAC:" + dataNow.features[0].properties.sac + "<br> SA:" + dataNow.features[0].properties.sa + "<br>SOURCE: " + dataNow.features[0].properties.node0sourc + "<p>";
-        $("#download-desc").html(text)
-        $("#download_display_div").animate({
-            left: xNow,
-            top: yNow
-        }).show();
-        dataCredential = {"sac": dataNow.features[0].properties.sac, "sa": dataNow.features[0].properties.sa, "node0sourc": dataNow.features[0].properties.node0sourc};
-
-    }
-
-
-    function setListener() {
-
-        $("#input-search").on("click", function(e){
-            e.preventDefault();
-			locChange();
-        });
-
-
-        $('#btn-geoLocation').click(function (event) {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    var geo_lat = position.coords.latitude;
-                    var geo_lon = position.coords.longitude;
-                    var geo_acc = position.coords.accuracy;
-
-                    map.setView([geo_lat, geo_lon], 12);
-
-                }, function (error) {
-                    //alert('Error occurred. Error code: ' + error.code);    
-                    alert('Sorry, your current location could not be found. \nPlease use the search box to enter your location.');
-                }, { timeout: 4000 });
-            }
-            else {
-                alert('Sorry, your current location could not be found. \nPlease use the search box to enter your location.');
-            }
-
-            return false;
-        });
+	<footer>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12"> <em>*** Non-Public:  For Internal Use Only ***</em> </div>
+			</div>
+		</div>
+	</footer>
 
 
 
-        $("#btn-nationLocation").on("click", function(){
-            map.fitBounds(bounds_us);
-        });
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script> 
+	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+	<script src="//api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.js"></script>
+	<script src="//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-pip/v0.0.2/leaflet-pip.js"></script>
+	<script src="app.js"></script>
 
-        $("#map").on("mousemove", function(e) {
-            xNow = e.pageX;
-            yNow = e.pageY;
-            ("#display").html(xNow + ' ' + yNow)
-        });
-
-        $("#x-download").on("click", function(e) {
-            $("#download_display_div").hide();
-        })
-
-        $("#btn-download").on("click", function(e) {
-            e.preventDefault();
-            downloadData();
-        })
-
-    }
-
-    function downloadData() {
-        var dataType = $("#download_select").val()
-        var sac = dataCredential.sac;
-        var sa = dataCredential.sa;
-        var node0sourc = dataCredential.node0sourc; 
-        if (dataType == "") {
-            alert("please select a data type");
-            return;
-        }
-        else {
-            if (dataType == "shapefile") {
-                format = "shape-zip";
-            }
-            if (dataType == "geojson") {
-                format = "application/json";
-            }
-            if (dataType == "kml") {
-                format = "kml";
-            }
-            if (dataType == "csv") {
-                format = "csv"
-            }
-
-            var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas&maxFeatures=50&outputFormat=" + format + "&cql_filter=sac='" + sac + "'+AND+sa='" + sa + "'+AND+node0sourc='" + node0sourc + "'";
-            alert(url)
-            window.open(url, config="toolbar=0");
-        }
-
-
-    }
-
-
-
-    function locChange() {
-
-        var loc = $("#input-location").val();
-
-
-        geocoder.query(loc, codeMap);
-    }
-
-    function codeMap(err, data) {
-        //alert(JSON.stringify(data));
-
-        var lat = data.latlng[0];
-        var lon = data.latlng[1];
-
-        if (data.lbounds) {
-            map.fitBounds(data.lbounds);
-        }
-
-        else if (data.latlng) {
-            map.setView([lat, lon], 15);
-        }
-    }
-
-    $(document).ready(function(){
-        createMap();
-        setListener();
-    });
-
-</script>
-
-
-</body></html>
+</body>
+</html>
