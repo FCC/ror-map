@@ -29,13 +29,11 @@
         map = L.mapbox.map('map', 'nbm.i2op87g0', { attributionControl: true, maxZoom: 11})
             .fitBounds(bounds_us);
 
-        //custom attrbution
-        //var credits = L.control.attribution().addTo(map);
-        //credits.addAttribution('Credits: FCC');
+        map.attributionControl.addAttribution('<a href="http://fcc.gov/maps">FCC Maps</a>');
 
-        baseStreet = L.mapbox.tileLayer('computech.j86bnb99').addTo(map);
-        baseSatellite = L.mapbox.tileLayer('computech.jh7ic2j0');
-        baseTerrain = L.mapbox.tileLayer('computech.jh7ih1gk');
+        baseStreet = L.mapbox.tileLayer('fcc.k74ed5ge').addTo(map);
+        baseSatellite = L.mapbox.tileLayer('fcc.k74d7n0g');
+        baseTerrain = L.mapbox.tileLayer('fcc.k74cm3ol');
 
         var wms_ror_service_areas = L.tileLayer.wms('http://ldevtm-geo02:8080/geoserver/wms', {
             format: 'image/png',
@@ -61,7 +59,9 @@
         geocoder = L.mapbox.geocoder('mapbox.places-v1');
 
         L.control.layers({
-
+			'Street': baseStreet.addTo(map),
+			'Satellite': baseSatellite,
+			'Terrain': baseTerrain
         },
         {
             'Service Areas SA': wms_ror_service_areas.addTo(map),
@@ -123,7 +123,6 @@
             });
         });
 
-
        //  $("#download-btn").button({
        //     icons: {
        //         primary: "ui-icon-locked"
@@ -163,10 +162,7 @@
         if (type == 'topo') {
             baseTerrain.addTo(map);
             toggleClass(type);
-        }
-
-        
-
+        }        
 
     }
 
@@ -178,11 +174,6 @@
         
         $('#btn-' + type).addClass('btn-baselayer-control-selected');
     }
-
-
-
-
-
 
 
     function displayPolygon(data) {
