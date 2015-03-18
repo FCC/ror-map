@@ -412,7 +412,7 @@
      setListener();
 
      $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
-     
+
      $('.btn-legend').click(function(){ 
         $(this).hide();
         $('.legend').show('fast');
@@ -435,7 +435,7 @@
     });
 
     $('#download-btn-small').on('click', function(){
-        showDownloadMenuBox();
+        $("#download-menu-box").show('fast');
     });
 
 });
