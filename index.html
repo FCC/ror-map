@@ -1,130 +1,109 @@
 <!DOCTYPE html>
-
 <html class="no-js" lang="en">
+
 <head>
-
-	<title>Rate of Return Map « FCC</title>
-	
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="description" content="Rate of Return Map « FCC">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="author" content="FCC GIS">	
-	
-	<link rel="shortcut icon" href="img/fcc_favicon.ico" type="image/x-icon">
-	
-	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet" />
-	<link href="//api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.css" rel="stylesheet" />
-	<link href="//code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
-	<link rel="stylesheet" href="css/app.css">
-
-<!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Rate of Return Map &laquo; FCC</title>
+    <meta name="description" content="FCC Rate of Return Map">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="img/fcc_favicon.ico" type="image/x-icon">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/mapbox.css" rel="stylesheet">
+    <link href="css/app-theme.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+      <script src="js/vendor/html5shiv.js"></script>
+      <script src="js/vendor/respond.min.js"></script>
       <script src="js/libs/selectivizr-min.js"></script>
 <![endif]-->
-
 </head>
+
 <body>
-	<header>
-		<nav class="container" role="navigation">
-			<div class="row">
-				<div class="col-xs-10 col-sm-9"> <a href="http://www.fcc.gov/"><img class="logo" src="img/logo-fcc.png" alt="Go to the Federal Communications Commission homepage at www.fcc.gov" title="Go to the Federal Communications Commission homepage at www.fcc.gov"></a>
-					<h1>Rate of Return Map</h1>
-				</div>
-				<div class="col-xs-2 col-sm-3"> <a class="pull-right" href="javascript: void(0);" data-toggle="modal" data-target="#modal-about"><span class="icon-help-2"></span><span class="sr-only">About/Help</span></a> </div>
-			</div>
-		</nav>
-	</header>
-	<main class="container">
-		<div class="row">
-			
-			<div class="col-md-9">
-				<form >
-					<div id="search-field" class="input-group" style="margin-bottom: 10px;">
-						<input id="input-location" class="form-control" type="search" placeholder="Enter Location">
-						<span class="input-group-btn">
-						
-						<button class="btn btn-default" type="submit" id="input-search" title="Search"><span class="glyphicon glyphicon-search"></span><span class="sr-only">Search</span></button>
-						</span> 
-					</div>
-				</form>
-				<div class="map-container">
-					<button title="Get Current Location" data-placement="right" data-toggle="tooltip" id="btn-geoLocation" type="button" class="btn-geoLocation btn btn-default st" data-original-title="Get Current Location"><span class="icon-locate-1"></span><span class="sr-only">Get Current Location</span></button>
-					<button title="Nationwide" data-placement="right" data-toggle="tooltip" id="btn-nationLocation" type="button" class="btn-nationLocation btn btn-default st" data-original-title="Nationwide"><span class="icon-nation-1"></span><span class="sr-only">Nationwide</span></button>
-					<div id="map">
-
-						<!-- tooltip box -->
-						<div class="col-md-3" id="tooltip_box_div" style="position: absolute; height: 70px; bottom: 22px; right: 0px; z-index: 999">
-							<div id="feature_display_div" class="panel panel-default" style="margin: 0px; height: 100%; width: 100%; padding: 10px;  border: solid 1px #000">
-							</div>
-						</div>
-						
-						<!--
-						<div style="position: absolute; z-index: 1001; top: 10px; left: 100px;">
-							<button id="btn-street" class="btn-baselayer-control btn-baselayer-control-selected">Street Map</button>
-							<button id="btn-satellite" class="btn-baselayer-control">Satellite</button>
-							<button id="btn-topo" class="btn-baselayer-control">Terrain</button>
-						</div>
-						-->
-
-
-						<div id="download-btn-small" style="position: absolute; width: 28px; height: 28px; top: 50px; right: 10px; background-color: #ffffff; border: solid 1px #888888; border-radius: 3px; text-align: center; padding: 5px; cursor: pointer; z-index: 1" onclick="showDownloadMenuBox()" title="Download Data">
-						<span class="ui-icon ui-icon-circle-arrow-s"></span>
-						</div>                                                
-
-						<div id="download-menu-box"  style="position: absolute; width: 400px; top: 50px; right: 10px; background-color: #ffffff; border: solid 1px #888888; border-radius: 3px; text-align: center; padding: 5px; display: none; cursor: pointer; z-index: 1">
-							<span class="ui-icon ui-icon-closethick" onclick="hideDownloadMenuBox()" style="float: right; cursor: default"></span>
-							<p>
-							<select id="download_select"><option value="">--data type--</option><option value="shapefile">Shapefile</option><option value="geojson">GeoJSON</option><option value="kml">KML</option><option value="csv">CSV</option></select> &nbsp;
-							<input type="radio" name="download-type" value="area" checked>One Area
-							<input type="radio" name="download-type" value="all">All Areas
-							&nbsp;&nbsp;<button id="btn-download" title="click to download"><span class="ui-icon ui-icon-circle-triangle-e"></span></button>
-							<p>
-							<span id="area-display" style="font-size: 12px;"></span>
-							<p>
-							<span id="warning-display" style="font-size: 12px; color: #f00">Please click on map to select an area to download</span>
-							
-						</div>
-
-						<div id="legend-btn-small" style="position: absolute; width: 28px; height: 28px; bottom: 70px; left: 5px; background-color: #ffffff; border: solid 1px #888888; border-radius: 3px; text-align: center; padding: 5px; cursor: pointer; z-index: 1" onclick="showMapLegendBox()" title="Map Legend">
-						<span class="ui-icon ui-icon-note"></span>
-						</div> 
-						
-						<div id="map-legend-box"  style="position: absolute; width: 150px; height: 165px; bottom: 70px; left: 5px; background-color: #eee; border: solid 1px #888888; border-radius: 5px; text-align: left; padding: 5px; display: none; cursor: default; z-index: 1">
-							<span class="ui-icon ui-icon-note" style="float: left"> </span> &nbsp; <span style="float: left; color: #000">Map Legend</span>   <span class="ui-icon ui-icon-closethick" onclick="hideMapLegendBox()" style="float: right; cursor: default"></span>
-							<p>
-							<p>
-							<table>
-							<tr><td><div style="width: 25px; height: 25px; background-color: #b0e27a; border: solid 2px #000; display: inline-block;"></div></td> <td style="vertical-align: center; padding: 10px;"> SAC Areas </td></tr>
-							<tr><td><div style="width: 25px; height: 25px; background-color: #b0e27a; border: solid 1px #fff; display: inline-block;"></div></td><td style="vertical-align: center; padding: 10px;"> SA Areas </td></tr>
-							<tr><td style="text-align: center"><div style="width: 15px; height: 15px; background-color: #fff; border: solid 1px #000; display: inline-block; border-radius: 20px;"></div></td><td style="vertical-align: center; padding: 10px;">Central Offices </td></tr>
-							</table>
-						</div>
-					</div>
-				</div>
-			</div>     
-		</div>
-	</main>
-
-	<div id="display"></div>
-
-	<footer>
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12"> <em>*** Non-Public:  For Internal Use Only ***</em> </div>
-			</div>
-		</div>
-	</footer>
-
-
-
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script> 
-	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-	<script src="//api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.js"></script>
-	<script src="//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-pip/v0.0.2/leaflet-pip.js"></script>
-	<script src="/js/app.js"></script>
-
+    <main class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Rate of Return Map</h1>
+                <form>
+                    <div id="search-field" class="input-group" style="margin-bottom: 10px;">
+                        <input id="input-location" class="form-control" type="search" placeholder="Enter Location">
+                        <span class="input-group-btn">
+                        
+                        <button class="btn btn-default" type="submit" id="input-search" title="Search"><span class="glyphicon glyphicon-search"></span><span class="sr-only">Search</span></button>
+                        </span>
+                    </div>
+                </form>
+                <div class="map-container">
+                    <button class="btn-mapCtrl btn-geoLocation btn btn-default st" title="Get Current Location" data-placement="right" data-toggle="tooltip" id="btn-geoLocation" type="button" data-original-title="Get Current Location"><span class="icon-locate-1"></span><span class="sr-only">Get Current Location</span></button>
+                    <button class="btn-mapCtrl btn-nationLocation btn btn-default st" title="Nationwide" data-placement="right" data-toggle="tooltip" id="btn-nationLocation" type="button" data-original-title="Nationwide"><span class="icon-nation-1"></span><span class="sr-only">Nationwide</span></button>
+                    <div id="map">
+                        <button id="download-btn-small" class="btn-mapCtrl btn-downloadAll btn btn-default" title="Download data for all areas" data-toggle="tooltip" data-placement="right">
+                            <span class="glyphicon glyphicon-download"></span>
+                        </button>
+                        <div id="download-menu-box" class="download-menu">
+                            <div class="links-downloadAll">
+                                Download data for all areas:
+                                <button class="btn btn-xs pull-right" type="button">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </button>
+                                <br>
+                                <a id="shapefile" href="#void" data-type="shape-zip">Shapefile</a> &nbsp;|&nbsp; <a id="geojson" href="#void" data-type="geojson">GeoJSON</a> &nbsp;|&nbsp; <a id="kml" href="#void" data-type="kml">KML</a> &nbsp;|&nbsp; <a id="csv" href="#void" data-type="csv">CSV</a>
+                            </div>
+                                                    
+                        </div>
+                        
+                        <div class="map-legend">
+                            <div class="legend" style="display: none;">
+                                <div class="map-legend-hd">
+                                    <span class="icon-legends-2"></span> <span class="map-legend-name">Map Legend</span>
+                                    <button class="btn-closeLegend btn btn-xs pull-right"><span class="glyphicon glyphicon-remove"></span> <span class="sr-only">Hide legend</span></button>
+                                </div>
+                                <dl class="dl-legend">
+                                    <dt>
+                                        <div style="width: 15px; height: 15px; background-color: #b0e27a; border: solid 2px #000;"></div>
+                                        </span>
+                                    </dt>
+                                    <dd>SAC Areas</dd>
+                                    <dt>
+                                        <div style="width: 15px; height: 15px; background-color: #b0e27a; border: solid 1px #fff;"></div>
+                                        </td>
+                                        <td style="vertical-align: center; padding: 10px;">
+                                    </dt>
+                                    <dd>SA Areas</dd>
+                                    <dt>
+                                        <div style="width: 15px; height: 15px; background-color: #fff; border: solid 1px #000; border-radius: 20px;"></div>
+                                    </dt>
+                                    <dd>Central Offices</dd>
+                                </dl>
+                            </div>
+                            <button title="" data-placement="right" data-toggle="tooltip" class="btn-legend btn btn-default btn-xs" data-original-title="Display&nbsp;Map&nbsp;Legend" style="display: inline-block;"><span class="icon-legends-2"></span><span class="sr-only">Legend</span></button>
+                        </div>
+                    </div>
+                    <div id="tooltip_box_div" class="map-toolTip">
+                        <div id="feature_display_div" class="tooltipTxt"></div>
+                        <div class="links-download">
+                            <a id="shapefile" href="#void">Shapefile</a> &nbsp;|&nbsp; <a id="geojson" href="#void">GeoJSON</a> &nbsp;|&nbsp; <a id="kml" href="#void">KML</a> &nbsp;|&nbsp; <a id="csv" href="#void">CSV</a>  
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <section>
+                    <h2>About</h2>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quis ea ducimus, eos natus autem, facilis fuga iusto facere dolore ex nostrum illo eum! Incidunt eum asperiores autem, aspernatur a consequuntur.</p>
+                </section>
+                <br>
+            </div>
+        </div>
+    </main>
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script>
+    window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')
+    </script>
+    
+    <script src="js/vendor/bootstrap.min.js"></script>
+    <script src="https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.js"></script>
+    <script src="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-pip/v0.0.2/leaflet-pip.js"></script>
+    <script src="js/app.js"></script>
 </body>
+
 </html>
