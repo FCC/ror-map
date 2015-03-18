@@ -26,18 +26,20 @@
                 <form>
                     <div id="search-field" class="input-group" style="margin-bottom: 10px;">
                         <input id="input-location" class="form-control" type="search" placeholder="Enter Location">
-                        <span class="input-group-btn">
-                        
-                        <button class="btn btn-default" type="submit" id="input-search" title="Search"><span class="glyphicon glyphicon-search"></span><span class="sr-only">Search</span></button>
+                        <span class="input-group-btn">                        
+                            <button class="btn-search btn btn-default" type="submit" id="input-search" title="Enter Location" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-search"></span><span class="sr-only">Search</span></button>
+                        </span>
+                        <span class="input-group-btn">  
+                            <button class="btn-geoLocation btn btn-default st" title="Get Current Location" data-toggle="tooltip" data-placement="top" id="btn-geoLocation" type="button" data-original-title="Get Current Location"><span class="icon-locate-1"></span><span class="sr-only">Get Current Location</span></button>
+                            <button class="btn-nationLocation btn btn-default st" title="Nationwide" data-toggle="tooltip" data-placement="top" id="btn-nationLocation" type="button" data-original-title="Nationwide"><span class="icon-nation-1"></span><span class="sr-only">Nationwide</span></button>
                         </span>
                     </div>
                 </form>
                 <div class="map-container">
-                    <button class="btn-mapCtrl btn-geoLocation btn btn-default st" title="Get Current Location" data-placement="right" data-toggle="tooltip" id="btn-geoLocation" type="button" data-original-title="Get Current Location"><span class="icon-locate-1"></span><span class="sr-only">Get Current Location</span></button>
-                    <button class="btn-mapCtrl btn-nationLocation btn btn-default st" title="Nationwide" data-placement="right" data-toggle="tooltip" id="btn-nationLocation" type="button" data-original-title="Nationwide"><span class="icon-nation-1"></span><span class="sr-only">Nationwide</span></button>
                     <div id="map">
                         <button id="download-btn-small" class="btn-mapCtrl btn-downloadAll btn btn-default" title="Download data for all areas" data-toggle="tooltip" data-placement="right">
                             <span class="glyphicon glyphicon-download"></span>
+                            <span class="sr-only">Download data for all areas"</span>
                         </button>
                         <div id="download-menu-box" class="download-menu">
                             <div class="links-downloadAll">
