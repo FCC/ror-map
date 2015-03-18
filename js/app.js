@@ -1,390 +1,441 @@
  var map;
-    var shownPolygon;
-    var clickedPolygon;
-    var dataNow = {"totalFeatures": 0};
-    var dataCredential = {};
-    var xNow;
-    var yNow;
+ var shownPolygon;
+ var clickedPolygon;
+ var dataNow = {
+     "totalFeatures": 0
+ };
+ var dataCredential = {};
+ var xNow;
+ var yNow;
 
-    var drawnPolygonOption = {
-        'color': '#fff',
-        'fillColor': '#000',
-        'weight': 3,
-        'fillOpacity': 0.5
-    }
+ var drawnPolygonOption = {
+     'color': '#fff',
+     'fillColor': '#000',
+     'weight': 3,
+     'fillOpacity': 0.5
+ }
 
-    var clickedPolygonOption = {
-        'color': '#000',
-        'fillColor': '#fff',
-        'weight': 3,
-        'fillOpacity': 0.5
-    }
+ var clickedPolygonOption = {
+     'color': '#000',
+     'fillColor': '#fff',
+     'weight': 3,
+     'fillOpacity': 0.5
+ }
 
-    var southWest = L.latLng(24.525841, -126.597970),
-        northEast = L.latLng(50.957531, -64.722975),
-        bounds_us = L.latLngBounds(southWest, northEast);
+ var southWest = L.latLng(24.525841, -126.597970),
+     northEast = L.latLng(50.957531, -64.722975),
+     bounds_us = L.latLngBounds(southWest, northEast);
 
-    function createMap() {
-        L.mapbox.accessToken = 'pk.eyJ1IjoiY29tcHV0ZWNoIiwiYSI6InMyblMya3cifQ.P8yppesHki5qMyxTc2CNLg';
-        map = L.mapbox.map('map', 'nbm.i2op87g0', { attributionControl: true, maxZoom: 11})
-            .fitBounds(bounds_us);
+ function createMap() {
+     L.mapbox.accessToken = 'pk.eyJ1IjoiY29tcHV0ZWNoIiwiYSI6InMyblMya3cifQ.P8yppesHki5qMyxTc2CNLg';
+     map = L.mapbox.map('map', 'nbm.i2op87g0', {
+             attributionControl: true,
+             maxZoom: 11
+         })
+         .fitBounds(bounds_us);
 
-        map.attributionControl.addAttribution('<a href="http://fcc.gov/maps">FCC Maps</a>');
+     map.attributionControl.addAttribution('<a href="http://fcc.gov/maps">FCC Maps</a>');
 
-        baseStreet = L.mapbox.tileLayer('fcc.k74ed5ge').addTo(map);
-        baseSatellite = L.mapbox.tileLayer('fcc.k74d7n0g');
-        baseTerrain = L.mapbox.tileLayer('fcc.k74cm3ol');
+     baseStreet = L.mapbox.tileLayer('fcc.k74ed5ge').addTo(map);
+     baseSatellite = L.mapbox.tileLayer('fcc.k74d7n0g');
+     baseTerrain = L.mapbox.tileLayer('fcc.k74cm3ol');
 
-        var wms_ror_service_areas = L.tileLayer.wms('http://ldevtm-geo02:8080/geoserver/wms', {
-            format: 'image/png',
-            transparent: true,
-            layers: 'geo_swat:ror_service_areas'
-        });
+     var wms_ror_service_areas = L.tileLayer.wms('http://ldevtm-geo02:8080/geoserver/wms', {
+         format: 'image/png',
+         transparent: true,
+         layers: 'geo_swat:ror_service_areas'
+     });
 
-        var wms_ror_service_areas_sac = L.tileLayer.wms('http://ldevtm-geo02:8080/geoserver/wms', {
-            format: 'image/png',
-            transparent: true,
-            layers: 'geo_swat:ror_service_areas_sac'
-        });
+     var wms_ror_service_areas_sac = L.tileLayer.wms('http://ldevtm-geo02:8080/geoserver/wms', {
+         format: 'image/png',
+         transparent: true,
+         layers: 'geo_swat:ror_service_areas_sac'
+     });
 
-        var wms_ror_central_offices = L.tileLayer.wms('http://ldevtm-geo02:8080/geoserver/wms', {
-            format: 'image/png',
-            transparent: true,
-            layers: 'geo_swat:ror_central_offices'
-        });
-
-
-        L.control.scale({ position: 'bottomright' }).addTo(map);
-
-        geocoder = L.mapbox.geocoder('mapbox.places-v1');
-
-        L.control.layers({
-			'Street': baseStreet.addTo(map),
-			'Satellite': baseSatellite,
-			'Terrain': baseTerrain
-        },
-        {
-            'Service Areas SA': wms_ror_service_areas.addTo(map),
-            'Service Areas SAC': wms_ror_service_areas_sac.addTo(map),
-            'Central Offices':  wms_ror_central_offices.addTo(map)
-        }
-        ).addTo(map);
-
-        // var gridLayer = L.mapbox.gridLayer('fcc.7zcvriap', {'follow': true});
-        // map.addLayer(gridLayer);
-        // map.addControl(L.mapbox.gridControl(gridLayer));
-
-        //map.addControl(L.mapbox.geocoderControl('mapbox.places').setPosition('topleft'))
-
-        //wms_ror_service_areas.addTo(map);
-
-        map.on("mousemove", function(e){
-
-            var lat = e.latlng.lat;
-            var lng = e.latlng.lng;
-
-            var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas&maxFeatures=1&outputFormat=text/javascript&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
-
-            isInsideDrawnPolygon = false;
-            if (map.hasLayer(shownPolygon)) {
-                 var results = leafletPip.pointInLayer([lng, lat], shownPolygon);
-                if (results.length > 0) {
-                    isInsideDrawnPolygon = true;
-                }
-            }
-
-            if (isInsideDrawnPolygon) {
-                return;
-            }
-
-            //$("#display").html(isInsideDrawnPolygon + ' ' +  url)
-
-            $.ajax({
-                type: "GET",
-                url: url,
-                dataType: "jsonp",
-                jsonpCallback: "parseResponse",
-                success: function(data) {
-                    displayPolygon(data);
-                }
-            });
-        });
-
-        $(function() {
-            var icons = {
-            header: "ui-icon-circle-arrow-e",
-            activeHeader: "ui-icon-circle-arrow-s"
-            };
-            $download_accordion =  $("#download_display_div").accordion({
-                icons: icons,
-                collapsible: true,
-                heightStyle: "content",
-                active: false
-            });
-        });
-
-       //  $("#download-btn").button({
-       //     icons: {
-       //         primary: "ui-icon-locked"
-       //     }
-       // });
-
-    }
+     var wms_ror_central_offices = L.tileLayer.wms('http://ldevtm-geo02:8080/geoserver/wms', {
+         format: 'image/png',
+         transparent: true,
+         layers: 'geo_swat:ror_central_offices'
+     });
 
 
-    $('#btn-street').on('click', function(e) {
-        e.preventDefault();
-        changeBaseLayer('street');
-    }); 
-    $('#btn-satellite').on('click', function(e) {
-        e.preventDefault()
-        changeBaseLayer('satellite');
-    });
-    $('#btn-topo').on('click', function(e) {
-        e.preventDefault();
-        changeBaseLayer('topo');
-    });
-  
-    function changeBaseLayer(type) {   
-    
-        map.removeLayer(baseStreet);
-        map.removeLayer(baseSatellite);
-        map.removeLayer(baseTerrain);
+     L.control.scale({
+         position: 'bottomright'
+     }).addTo(map);
 
-        if (type == 'street') {
-            baseStreet.addTo(map);
-            toggleClass(type);
-        }
-        if (type == 'satellite') {
-            baseSatellite.addTo(map);
-            toggleClass(type);
-        }
-        if (type == 'topo') {
-            baseTerrain.addTo(map);
-            toggleClass(type);
-        }        
+     geocoder = L.mapbox.geocoder('mapbox.places-v1');
 
-    }
+     L.control.layers({
+         'Street': baseStreet.addTo(map),
+         'Satellite': baseSatellite,
+         'Terrain': baseTerrain
+     }, {
+         'Service Areas SA': wms_ror_service_areas.addTo(map),
+         'Service Areas SAC': wms_ror_service_areas_sac.addTo(map),
+         'Central Offices': wms_ror_central_offices.addTo(map)
+     }).addTo(map);
 
-    function toggleClass(type) {
-    
-        $('#btn-street').removeClass('btn-baselayer-control-selected');
-        $('#btn-satellite').removeClass('btn-baselayer-control-selected');
-        $('#btn-topo').removeClass('btn-baselayer-control-selected');       
-        
-        $('#btn-' + type).addClass('btn-baselayer-control-selected');
-    }
+     // var gridLayer = L.mapbox.gridLayer('fcc.7zcvriap', {'follow': true});
+     // map.addLayer(gridLayer);
+     // map.addControl(L.mapbox.gridControl(gridLayer));
 
+     //map.addControl(L.mapbox.geocoderControl('mapbox.places').setPosition('topleft'))
 
-    function displayPolygon(data) {
-        dataNow = data;
+     //wms_ror_service_areas.addTo(map);
 
-        if (map.hasLayer(shownPolygon)) {
-        map.removeLayer(shownPolygon)
-        }
+     map.on("click", function(e) {
 
-        if (dataNow.totalFeatures == 0) {
-            $("#tooltip_box_div").hide();
-             return;
+         var lat = e.latlng.lat;
+         var lng = e.latlng.lng;
+
+         var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas&maxFeatures=1&outputFormat=text/javascript&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
+
+         isInsideDrawnPolygon = false;
+
+         if (map.hasLayer(shownPolygon)) {
+             var results = leafletPip.pointInLayer([lng, lat], shownPolygon);
+             if (results.length > 0) {
+                 isInsideDrawnPolygon = true;
+             }
          }
 
-        shownPolygon = L.mapbox.featureLayer(data).setStyle(drawnPolygonOption).addTo(map);
-        shownPolygon.on("click", function(e) {
-            clickPolygon(e);
-        });
+         if (isInsideDrawnPolygon) {
+             return;
+         }         
+
+         $.ajax({
+             type: "GET",
+             url: url,
+             dataType: "jsonp",
+             jsonpCallback: "parseResponse",
+             success: function(data) {
+                 //displayPolygon(data);
+                 clickPolygon(data);
+             }
+         });
+     });
+
+ }
 
 
-        dataNow = data;
-        shownPolygon.setZIndex(999);
-        var text = "SAC:" + dataNow.features[0].properties.sac + "<br> SA:" + dataNow.features[0].properties.sa + "<br>SOURCE: " + dataNow.features[0].properties.node0sourc + "<p>";
+ $('#btn-street').on('click', function(e) {
+     e.preventDefault();
+     changeBaseLayer('street');
+ });
+ $('#btn-satellite').on('click', function(e) {
+     e.preventDefault()
+     changeBaseLayer('satellite');
+ });
+ $('#btn-topo').on('click', function(e) {
+     e.preventDefault();
+     changeBaseLayer('topo');
+ });
 
-        $("#feature_display_div").html(text);
-        $("#tooltip_box_div").show();
-    }
+ function changeBaseLayer(type) {
 
-    function clickPolygon(e) {
+     map.removeLayer(baseStreet);
+     map.removeLayer(baseSatellite);
+     map.removeLayer(baseTerrain);
 
-        // var text = "SAC:" + dataNow.features[0].properties.sac + "<br> SA:" + dataNow.features[0].properties.sa + "<br>SOURCE: " + dataNow.features[0].properties.node0sourc + "<p>";
-        // $("#selected_area_desc").html(text);
-        // $("#download_menu_div").show();
-        // $("#download_display_div").accordion('option', {active: true});
+     if (type == 'street') {
+         baseStreet.addTo(map);
+         toggleClass(type);
+     }
+     if (type == 'satellite') {
+         baseSatellite.addTo(map);
+         toggleClass(type);
+     }
+     if (type == 'topo') {
+         baseTerrain.addTo(map);
+         toggleClass(type);
+     }
 
-        if (map.hasLayer(clickedPolygon)) {
-            map.removeLayer(clickedPolygon);
-        }
-        clickedPolygon = L.mapbox.featureLayer(dataNow).setStyle(clickedPolygonOption).addTo(map);
-        dataCredential = {"sac": dataNow.features[0].properties.sac, "sa": dataNow.features[0].properties.sa, "node0sourc": dataNow.features[0].properties.node0sourc};
+ }
 
-        var text = "[Selected Area] SAC: " + dataCredential.sac + " SA: " + dataCredential.sa + " SOURCE:" + dataCredential.node0sourc;
-        $("#area-display").html(text);
-        $("#warning-display").html("");
+ function toggleClass(type) {
 
-    }
+     $('#btn-street').removeClass('btn-baselayer-control-selected');
+     $('#btn-satellite').removeClass('btn-baselayer-control-selected');
+     $('#btn-topo').removeClass('btn-baselayer-control-selected');
 
-
-    function setListener() {
-
-        $("#input-search").on("click", function(e){
-            e.preventDefault();
-			locChange();
-        });
-
-
-        $('#btn-geoLocation').click(function (event) {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    var geo_lat = position.coords.latitude;
-                    var geo_lon = position.coords.longitude;
-                    var geo_acc = position.coords.accuracy;
-
-                    map.setView([geo_lat, geo_lon], 12);
-
-                }, function (error) {
-                    //alert('Error occurred. Error code: ' + error.code);    
-                    alert('Sorry, your current location could not be found. \nPlease use the search box to enter your location.');
-                }, { timeout: 4000 });
-            }
-            else {
-                alert('Sorry, your current location could not be found. \nPlease use the search box to enter your location.');
-            }
-
-            return false;
-        });
+     $('#btn-' + type).addClass('btn-baselayer-control-selected');
+ }
 
 
+ function displayPolygon(data) {
+     dataNow = data;
 
-        $("#btn-nationLocation").on("click", function(){
-            map.fitBounds(bounds_us);
-        });
+     if (map.hasLayer(shownPolygon)) {
+         map.removeLayer(shownPolygon)
+     }
 
-        $("#map").on("mousemove", function(e) {
-            xNow = e.pageX;
-            yNow = e.pageY;
-            ("#display").html(xNow + ' ' + yNow)
-        });
+     if (dataNow.totalFeatures == 0) {
+         $("#tooltip_box_div").hide();
+         return;
+     }
 
-        $("#x-download").on("click", function(e) {
-            $("#download_display_div").hide();
-        });
-
-        $("#btn-download").on("click", function(e) {
-            e.preventDefault();
-            downloadData();
-        });
-
-        $("#download_select").on("change", function(e) {
-            e.preventDefault();
-            $("#warning-display").html("");
-        });
-
-        $("input[name=download-type]").on("change", function(e) {
-            e.preventDefault();
-            var downloadType = $('input[name=download-type]:checked').val();
-            if (downloadType == "all") {
-                $("#warning-display").html("This will download data for all areas in one file");
-            }
-            else {
-                if (dataCredential.sac == undefined) {
-                    $("#warning-display").html("Please click on map to select an area to download");
-                }
-                else {
-                    $("#warning-display").html("This will download data for the selected area");
-                }
-            }
-            
-        });
+     shownPolygon = L.mapbox.featureLayer(data).setStyle(drawnPolygonOption).addTo(map);
+     shownPolygon.on("click", function(e) {
+         clickPolygon(e);
+     });
 
 
+     dataNow = data;
+     shownPolygon.setZIndex(999);
+     var text = "SAC:" + dataNow.features[0].properties.sac + "<br> SA:" + dataNow.features[0].properties.sa + "<br>SOURCE: " + dataNow.features[0].properties.node0sourc;
 
-    }
+     $("#feature_display_div").html(text);
+     $("#tooltip_box_div").show();
+ }
 
-    function downloadData() {
-        var downloadType = $('input[name=download-type]:checked').val();
-        var sac = dataCredential.sac;
-        var sa = dataCredential.sa;
-        var node0sourc = dataCredential.node0sourc;
+ function clickPolygon(data) { console.log(data);
+    dataNow = data;
 
-        if (downloadType == "area" && sac == undefined) {
-            var text = "Please click on map to select an area";
-            $("#warning-display").html(text);
-            return;
-        }
+     if (dataNow.totalFeatures == 0) {
+         $("#tooltip_box_div").hide();
+         return;
+     }
 
-        var dataType = $("#download_select").val();
-        if (dataType == "") {
-            var text = "Please select a data type";
-            $("#warning-display").html(text);
-            return;
-        }
-        else {
-            if (dataType == "shapefile") {
-                format = "shape-zip";
-            }
-            if (dataType == "geojson") {
-                format = "application/json";
-            }
-            if (dataType == "kml") {
-                format = "kml";
-            }
-            if (dataType == "csv") {
-                format = "csv"
-            }
+     if (map.hasLayer(clickedPolygon)) {
+         map.removeLayer(clickedPolygon);
+     }
+     clickedPolygon = L.mapbox.featureLayer(dataNow).setStyle(clickedPolygonOption).addTo(map);
+     dataCredential = {
+         "sac": dataNow.features[0].properties.sac,
+         "sa": dataNow.features[0].properties.sa,
+         "node0sourc": dataNow.features[0].properties.node0sourc
+     };
 
-            if (downloadType == "area") {
-                var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas&maxFeatures=50&outputFormat=" + format + "&cql_filter=sac='" + sac + "'+AND+sa='" + sa + "'+AND+node0sourc='" + node0sourc + "'";
-            }
-            else {
-                var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas&maxFeatures=10000&outputFormat=" + format;
-            }
+     var text = "[Selected Area] SAC: " + dataCredential.sac + " SA: " + dataCredential.sa + " SOURCE:" + dataCredential.node0sourc;
+     
+    var tooltipText = "SAC:" + dataNow.features[0].properties.sac + "<br> SA:" + dataNow.features[0].properties.sa + "<br>SOURCE: " + dataNow.features[0].properties.node0sourc;
 
-            window.open(url, config="toolbar=0");
-        }
+     $("#feature_display_div").html(tooltipText);
+     $("#tooltip_box_div").show();
+
+     $("#area-display").html(text);
+     $("#warning-display").html("");
+
+ }
 
 
-    }
+ function setListener() {
+
+     $("#input-search").on("click", function(e) {
+         e.preventDefault();
+         locChange();
+     });
+
+
+     $('#btn-geoLocation').click(function(event) {
+         if (navigator.geolocation) {
+             navigator.geolocation.getCurrentPosition(function(position) {
+                 var geo_lat = position.coords.latitude;
+                 var geo_lon = position.coords.longitude;
+                 var geo_acc = position.coords.accuracy;
+
+                 map.setView([geo_lat, geo_lon], 12);
+
+             }, function(error) {
+                 //alert('Error occurred. Error code: ' + error.code);    
+                 alert('Sorry, your current location could not be found. \nPlease use the search box to enter your location.');
+             }, {
+                 timeout: 4000
+             });
+         } else {
+             alert('Sorry, your current location could not be found. \nPlease use the search box to enter your location.');
+         }
+
+         return false;
+     });
 
 
 
-    function locChange() {
+     $("#btn-nationLocation").on("click", function() {
+         map.fitBounds(bounds_us);
+     });
 
-        var loc = $("#input-location").val();
+     $("#map").on("mousemove", function(e) {
+         xNow = e.pageX;
+         yNow = e.pageY;
+        // $("#display").html(xNow + ' ' + yNow)
+     });
+
+     $("#x-download").on("click", function(e) {
+         $("#download_display_div").hide();
+     });
+
+     $("#btn-download").on("click", function(e) {
+         e.preventDefault();
+         downloadData();
+     });
+
+     $("#download_select").on("change", function(e) {
+         e.preventDefault();
+         $("#warning-display").html("");
+     });
+
+     $("input[name=download-type]").on("change", function(e) {
+         e.preventDefault();
+         var downloadType = $('input[name=download-type]:checked').val();
+         if (downloadType == "all") {
+             $("#warning-display").html("This will download data for all areas in one file");
+         } else {
+             if (dataCredential.sac == undefined) {
+                 $("#warning-display").html("Please click on map to select an area to download");
+             } else {
+                 $("#warning-display").html("This will download data for the selected area");
+             }
+         }
+
+     });
 
 
-        geocoder.query(loc, codeMap);
-    }
 
-    function codeMap(err, data) {
-        //alert(JSON.stringify(data));
+ }
 
-        var lat = data.latlng[0];
-        var lon = data.latlng[1];
+ function downloadData(e) { console.log(e);
+     var downloadType = $('input[name=download-type]:checked').val();
+     var sac = dataCredential.sac;
+     var sa = dataCredential.sa;
+     var node0sourc = dataCredential.node0sourc;
 
-        if (data.lbounds) {
-            map.fitBounds(data.lbounds);
-        }
+     /*if (downloadType == "area" && sac == undefined) {
+         var text = "Please click on map to select an area";
+         $("#warning-display").html(text);
+         return;
+     }*/
 
-        else if (data.latlng) {
-            map.setView([lat, lon], 15);
-        }
-    }
+     var dataType = e.currentTarget.id;;
 
-    function showDownloadMenuBox() {
-        $("#download-menu-box").show()
-    }
+     if (dataType == "") {
+         var text = "Please select a data type";
+         $("#warning-display").html(text);
+         return;
+     } else {
+         if (dataType == "shapefile") {
+             format = "shape-zip";
+         }
+         if (dataType == "geojson") {
+             format = "application/json";
+         }
+         if (dataType == "kml") {
+             format = "kml";
+         }
+         if (dataType == "csv") {
+             format = "csv"
+         }
 
-    function hideDownloadMenuBox() {
-        $("#download-menu-box").hide()
-    }
+         var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas&maxFeatures=50&outputFormat=" + format + "&cql_filter=sac='" + sac + "'+AND+sa='" + sa + "'+AND+node0sourc='" + node0sourc + "'";
 
-    function showMapLegendBox() {
-        $("#map-legend-box").show()
-    }
+         window.open(url, config = "toolbar=0");
+     }
 
-    function hideMapLegendBox() {
-        $("#map-legend-box").hide()
-    }
 
-    $(document).ready(function(){
-        createMap();
-        setListener();
+ }
+
+ function downloadAllData(e) { console.log(e);
+     var downloadType = $('input[name=download-type]:checked').val();
+     var sac = dataCredential.sac;
+     var sa = dataCredential.sa;
+     var node0sourc = dataCredential.node0sourc;
+
+     /*if (downloadType == "area" && sac == undefined) {
+         var text = "Please click on map to select an area";
+         $("#warning-display").html(text);
+         return;
+     }*/
+
+     var dataType = $(e.currentTarget).attr('data-type');
+
+     if (dataType == "shapefile") {
+             format = "shape-zip";
+         }
+         if (dataType == "geojson") {
+             format = "application/json";
+         }
+         if (dataType == "kml") {
+             format = "kml";
+         }
+         if (dataType == "csv") {
+             format = "csv"
+         }
+
+     var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas&maxFeatures=10000&outputFormat=" + format;
+
+         window.open(url, config = "toolbar=0");
+
+
+ }
+
+
+
+ function locChange() {
+
+     var loc = $("#input-location").val();
+
+
+     geocoder.query(loc, codeMap);
+ }
+
+ function codeMap(err, data) {
+     //alert(JSON.stringify(data));
+
+     var lat = data.latlng[0];
+     var lon = data.latlng[1];
+
+     if (data.lbounds) {
+         map.fitBounds(data.lbounds);
+     } else if (data.latlng) {
+         map.setView([lat, lon], 15);
+     }
+ }
+
+ function showDownloadMenuBox() {
+     $("#download-menu-box").show()
+ }
+
+ function hideDownloadMenuBox() {
+     $("#download-menu-box").hide()
+ }
+
+ function showMapLegendBox() {
+     $("#map-legend-box").show()
+ }
+
+ function hideMapLegendBox() {
+     $("#map-legend-box").hide()
+ }
+
+ $(document).ready(function() {
+     createMap();
+     setListener();
+
+     $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
+     
+     $('.btn-legend').click(function(){ 
+        $(this).hide();
+        $('.legend').show('fast');
     });
+
+    $('.btn-closeLegend').click(function() { 
+        $('.legend').hide('fast');
+        $('.btn-legend').show();
+    });
+
+    $('.links-download').on('click', 'a', function(e) {
+        downloadData(e);
+    });
+
+
+    $('.links-downloadAll').on('click', 'a', function(e) {
+        downloadAllData(e);
+    }).on('click', '.btn', function(e) {
+        $('#download-menu-box').hide();
+    });
+
+    $('#download-btn-small').on('click', function(){
+        showDownloadMenuBox();
+    });
+
+});
