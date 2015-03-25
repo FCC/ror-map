@@ -519,13 +519,13 @@ function clickPolygonSAC(data) {
             map.fitBounds(bounds)
             var center_lat = (bbox[0] + bbox[2]) / 2;
             var center_lon = (bbox[1] + bbox[3]) / 2;
-            selectedMarker = L.marker([center_lat, center_lon], {
-            icon: L.mapbox.marker.icon({
-                'marker-size': 'large',
-                'marker-symbol': '',
-                'marker-color': '#fa0'
-            })
-        }).addTo(map);
+        //     selectedMarker = L.marker([center_lat, center_lon], {
+        //     icon: L.mapbox.marker.icon({
+        //         'marker-size': 'large',
+        //         'marker-symbol': '',
+        //         'marker-color': '#fa0'
+        //     })
+        // }).addTo(map);
 
         }
 

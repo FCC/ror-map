@@ -129,79 +129,7 @@
 
 <script>
 
-$( "#input-sac" ).autocomplete({
-source: function( request, response ) {
 
-var sac = request.term
-
-var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas_sac&count=25&propertyName=sac&outputFormat=text/javascript&sortBy=sac&cql_filter=sac+like+'" + sac + "%25'";
-
-$.ajax({
-type: "GET",
-url: url,
-dataType: "jsonp",
-jsonpCallback: "parseResponse",
-success: function( data ) {
-    var features = data.features;
-    sac_list = [];
-    for (var i = 0; i < features.length; i++) {
-        sac_list.push(features[i].properties.sac);
-    }
-
-response( sac_list );
-}
-});
-},
-minLength: 2,
-select: function( event, ui ) {
-    setTimeout(function() {getSAC();}, 200);
-},
-open: function() {
-$( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
-},
-close: function() {
-$( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
-}
-});
-
-function getSAC() {
-    var sac = $("#input-sac").val();
-    var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas_sac&count=1&outputFormat=text/javascript&cql_filter=sac='" + sac + "'";
-
-    //alert(url)
-    $.ajax({
-type: "GET",
-url: url,
-dataType: "jsonp",
-jsonpCallback: "parseResponse",
-success: function( data ) {
-//alert(data.totalFeatures)
-    var feature = data.features[0];
-    var bbox = feature.properties.bbox;
-    var southWest = L.latLng(bbox[0], bbox[1]),
-    northEast = L.latLng(bbox[2], bbox[3]),
-    bounds = L.latLngBounds(southWest, northEast);
-    //alert(bounds)
-    clickedPolygon1 = L.mapbox.featureLayer(feature).setStyle(clickedPolygonOption).addTo(map);
-    //alert(clickedPolygon1)
-    clickedPolygon1.setZIndex(999)
-    map.fitBounds(bounds)
-    var center_lat = (bbox[0] + bbox[2]) / 2;
-    var center_lon = (bbox[1] + bbox[3]) / 2;
-    selectedMarker = L.marker([center_lat, center_lon], {
-    icon: L.mapbox.marker.icon({
-        'marker-size': 'large',
-        'marker-symbol': '',
-        'marker-color': '#fa0'
-    })
-}).addTo(map);
-
-}
-
-});
-
-
-}
 
 </script>
 
