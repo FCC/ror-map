@@ -1,25 +1,49 @@
  var map;
- var shownPolygon;
+ var shownPolygonSAC;
+ var shownPolygonSA;
  var clickedPolygon;
- var dataNow = {
+ var isInsideDrawnPolygonSAC = false;
+ var isInsideDrawnPolygonSA = false;
+ var clickedPolygonList = [];
+ var clickedSACList = [];
+ var clickedSACData = [];
+ var dataNowSAC = {
      "totalFeatures": 0
  };
+ var dataNowSA = {
+     "totalFeatures": 0
+ };
+
  var dataCredential = {};
  var xNow;
  var yNow;
 
- var drawnPolygonOption = {
+ var drawnPolygonOptionSAC = {
      'color': '#ffff21',
      'fillColor': '#ffff21',
      'weight': 4,
-     'fillOpacity': 0.25
+     'fillOpacity': 0.6
  }
 
- var clickedPolygonOption = {
-     'color': '#65ff21',
-     'fillColor': '#fff',
+  var drawnPolygonOptionSA = {
+     'color': '#fff',
+     'fillColor': '#999',
+     'weight': 2,
+     'fillOpacity': 0.4
+ }
+
+ // var clickedPolygonOption = {
+ //     'color': '#65ff21',
+ //     'fillColor': '#fff',
+ //     'weight': 4,
+ //     'fillOpacity': 0.25
+ // }
+
+  var clickedPolygonOption = {
+     'color': '#00ff00',
+     'fillColor': '#00ff00',
      'weight': 4,
-     'fillOpacity': 0.25
+     'fillOpacity': 0.6
  }
 
  var southWest = L.latLng(24.525841, -126.597970),
@@ -30,7 +54,7 @@
      L.mapbox.accessToken = 'pk.eyJ1IjoiY29tcHV0ZWNoIiwiYSI6InMyblMya3cifQ.P8yppesHki5qMyxTc2CNLg';
      map = L.mapbox.map('map', 'nbm.i2op87g0', {
              attributionControl: true,
-             maxZoom: 11
+             maxZoom: 19
          })
          .fitBounds(bounds_us);
 
@@ -52,13 +76,13 @@
          layers: 'geo_swat:ror_service_areas_sac'
      });
 
-     /*
+     
      var wms_ror_central_offices = L.tileLayer.wms('http://ldevtm-geo02:8080/geoserver/wms', {
          format: 'image/png',
          transparent: true,
          layers: 'geo_swat:ror_central_offices'
      });
-	 */
+	 
 	 
 	 var wfs_ror_central_offices = L.mapbox.featureLayer();
 	 	 
@@ -91,7 +115,7 @@
      }, {
          'Service Areas SA': wms_ror_service_areas.addTo(map),
          'Service Areas SAC': wms_ror_service_areas_sac.addTo(map),
-         'Central Offices': wfs_ror_central_offices//.addTo(map)
+         'Central Offices': wms_ror_central_offices.addTo(map)
      }, {
          position: 'topleft'
      }).addTo(map);
@@ -109,31 +133,62 @@
 		var lat = e.latlng.lat;
 		var lng = e.latlng.lng;
 
-		var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas&maxFeatures=1&outputFormat=text/javascript&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
+        //SAC
+		var url_sac = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas_sac&maxFeatures=1&outputFormat=text/javascript&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
 
-		isInsideDrawnPolygon = false;
-		if (map.hasLayer(shownPolygon)) {
-			 var results = leafletPip.pointInLayer([lng, lat], shownPolygon);
+		isInsideDrawnPolygonSAC = false;
+		if (map.hasLayer(shownPolygonSAC)) {
+			 var results = leafletPip.pointInLayer([lng, lat], shownPolygonSAC);
 			if (results.length > 0) {
-				isInsideDrawnPolygon = true;
+				isInsideDrawnPolygonSAC = true;
 			}
 		}
 
-		if (isInsideDrawnPolygon) {
-			return;
+		if (!isInsideDrawnPolygonSAC) {
+    		$.ajax({
+                type: "GET",
+                url: url_sac,
+                dataType: "jsonp",
+                jsonpCallback: "parseResponse",
+                success: function(data) {
+                    displayPolygonSAC(data);
+                }
+            });
+
+         $("#tooltip_box_div").hide();
+
+            return;
 		}
 
-		//$("#display").html(isInsideDrawnPolygon + ' ' +  url)
 
-		$.ajax({
-			type: "GET",
-			url: url,
-			dataType: "jsonp",
-			jsonpCallback: "parseResponse",
-			success: function(data) {
-				displayPolygon(data);
-			}
-		});
+
+        //SA
+        var url_sa = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas&maxFeatures=1&outputFormat=text/javascript&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
+
+        isInsideDrawnPolygonSA = false;
+        if (map.hasLayer(shownPolygonSA)) {
+             var results = leafletPip.pointInLayer([lng, lat], shownPolygonSA);
+            if (results.length > 0) {
+                isInsideDrawnPolygonSA = true;
+            }
+        }
+
+        if (isInsideDrawnPolygonSA) {
+            return;
+        }
+
+        $.ajax({
+            type: "GET",
+            url: url_sa,
+            dataType: "jsonp",
+            jsonpCallback: "parseResponse",
+            success: function(data) {
+                displayPolygonSA(data);
+            }
+        });
+
+
+
 	});
 
 	/*
@@ -216,51 +271,100 @@
  }
 
 
- function displayPolygon(data) {
-     dataNow = data;
+ function displayPolygonSAC(data) {
+     dataNowSAC = data;
 
-     if (map.hasLayer(shownPolygon)) {
-         map.removeLayer(shownPolygon)
+     if (dataNowSAC.totalFeatures == 0) {
+        if (map.hasLayer(shownPolygonSAC)) {
+         map.removeLayer(shownPolygonSAC);
+         return;
      }
 
-     if (dataNow.totalFeatures == 0) {
+     } 
+
+     var id = data.features[0].id.replace(/\..*$/, '');
+     if (id == "ror_service_areas") {
+        return;
+     }
+
+     if (map.hasLayer(shownPolygonSAC)) {
+         map.removeLayer(shownPolygonSAC)
+     }
+
+
+     shownPolygonSAC = L.mapbox.featureLayer(dataNowSAC).setStyle(drawnPolygonOptionSAC).addTo(map);
+     shownPolygonSAC.on("click", function(e) {
+         clickPolygonSAC(e);
+     });
+
+     shownPolygonSAC.setZIndex(999);
+     var text = "SAC:" + dataNowSAC.features[0].properties.sac + "<br> SA:" + dataNowSAC.features[0].properties.sa + "<br>SOURCE: " + dataNowSAC.features[0].properties.node0sourc;
+
+ }
+
+
+  function displayPolygonSA(data) {
+     dataNowSA = data;
+
+    var id = data.features[0].id.replace(/\..*$/, '');
+     if (id == "ror_service_areas_sac") {
+        return;
+     }
+
+     if (map.hasLayer(shownPolygonSA)) {
+         map.removeLayer(shownPolygonSA)
+     }
+
+     if (dataNowSA.totalFeatures == 0) {
          $("#tooltip_box_div").hide();
          return;
      }
 
-     shownPolygon = L.mapbox.featureLayer(data).setStyle(drawnPolygonOption).addTo(map);
-     shownPolygon.on("click", function(e) {
-         clickPolygon(e);
-     });
+     shownPolygonSA = L.mapbox.featureLayer(dataNowSA).setStyle(drawnPolygonOptionSA).addTo(map);
+     shownPolygonSA.on("click", function(e) {
+          clickPolygonSA(e);
+      });
 
-     dataNow = data;
-     shownPolygon.setZIndex(999);
-     var text = "SAC:" + dataNow.features[0].properties.sac + "<br> SA:" + dataNow.features[0].properties.sa + "<br>SOURCE: " + dataNow.features[0].properties.node0sourc;
+     shownPolygonSA.setZIndex(999);
+     var text = "Study Area Code:" + dataNowSA.features[0].properties.sac + "<br> Service Area:" + dataNowSA.features[0].properties.sa + "<br>Source: " + dataNowSA.features[0].properties.node0sourc;
 
      $("#feature_display_div").html(text);
      $("#tooltip_box_div").show();
  }
 
- function clickPolygon(data) { console.log(data);
+ function clickPolygonSA(data) { console.log(data);
+
     dataNow = data;
 
-     if (dataNow.totalFeatures == 0) {
+     if (dataNowSA.totalFeatures == 0) {
          $("#tooltip_box_div").hide();
          return;
      }
 
-     if (map.hasLayer(clickedPolygon)) {
-         map.removeLayer(clickedPolygon);
-     }
-     clickedPolygon = L.mapbox.featureLayer(dataNow).setStyle(clickedPolygonOption).addTo(map);
      dataCredential = {
-         "sac": dataNow.features[0].properties.sac,
-         "sa": dataNow.features[0].properties.sa,
-         "node0sourc": dataNow.features[0].properties.node0sourc
+         "sac": dataNowSA.features[0].properties.sac,
+         "sa": dataNowSA.features[0].properties.sa,
+         "node0sourc": dataNowSA.features[0].properties.node0sourc
      };
 
+     var index = $.inArray(dataCredential.sac, clickedSACList);
+     if (index < 0) {
+        clickedSACList.push(dataCredential.sac);
+        clickedSACData.push(dataNowSAC);
+     }
+     else {
+        clickedSACList.splice(index, 1);
+        clickedSACData.splice(index, 1);
+        //alert('deleted')
+        //alert('num sac data=' + clickedSACData.length)
+     }
+
+     //alert(clickedSACList);
+
+     updateSACDownloadBox();
+
      var text = "[Selected Area] SAC: " + dataCredential.sac + " SA: " + dataCredential.sa + " SOURCE:" + dataCredential.node0sourc;
-     
+
     var tooltipText = "SAC:" + dataNow.features[0].properties.sac + "<br> SA:" + dataNow.features[0].properties.sa + "<br>SOURCE: " + dataNow.features[0].properties.node0sourc;
 
      $("#feature_display_div").html(tooltipText);
@@ -270,6 +374,23 @@
      $("#warning-display").html("");
 
  }
+
+function clickPolygonSAC(data) {
+
+        var index = $.inArray(dataNowSAC.features[0].properties.sac, clickedSACList);
+      
+         if (index < 0) {
+            clickedSACList.push(dataNowSAC.features[0].properties.sac);
+            clickedSACData.push(dataNowSAC);
+         }
+         else {
+            clickedSACList.splice(index, 1);
+            clickedSACData.splice(index, 1);
+         }
+
+         updateSACDownloadBox();
+
+}
 
  function setListener() {
 
@@ -307,7 +428,6 @@
      $("#map").on("mousemove", function(e) {
          xNow = e.pageX;
          yNow = e.pageY;
-        // $("#display").html(xNow + ' ' + yNow)
      });
 
      $("#x-download").on("click", function(e) {
@@ -338,6 +458,14 @@
          }
 
      });
+
+     // $("#input-sac").on("change", function(e) {
+     //     e.preventDefault();
+     //     alert('change');
+     // });
+
+
+
  }
 
  function downloadData(e) { console.log(e);
@@ -468,13 +596,96 @@
     });
 
     $('.links-downloadAll').on('click', 'a', function(e) {
-        downloadAllData(e);
+        //downloadAllData(e);
+        downloadSAC(e);
     }).on('click', '.btn', function(e) {
         $('#download-menu-box').hide();
     });
 
     $('#download-btn-small').on('click', function(){
+        setWhatToDownload();
         $("#download-menu-box").show('fast');
     });
 
 });
+
+
+function updateSACDownloadBox() {
+
+    for (var i = 0; i < clickedPolygonList.length; i++) {
+        if (map.hasLayer(clickedPolygonList[i])) {
+            map.removeLayer(clickedPolygonList[i]);
+        }
+    }
+
+    setWhatToDownload();
+
+    clickedPolygonList = [];
+    for (var i = 0; i < clickedSACData.length; i++) {
+        var poly = L.mapbox.featureLayer(clickedSACData[i]).setStyle(clickedPolygonOption).addTo(map);
+        clickedPolygonList.push(poly);
+        clickedPolygonList[clickedPolygonList.length-1].on("click", function(e) {
+
+        var index = $.inArray(dataCredential.sac, clickedSACList);
+         if (index < 0) {
+            clickedSACList.push(dataCredential.sac);
+            clickedSACData.push(dataNowSAC);
+         }
+         else {
+            clickedSACList.splice(index, 1);
+            clickedSACData.splice(index, 1);
+         }
+
+         updateSACDownloadBox();
+
+            });
+        }
+
+}
+
+function downloadSAC(e) {
+    var dataType = e.target.id;
+    if (dataType == "shapefile") {
+            format = "shape-zip";
+        }
+        if (dataType == "geojson") {
+            format = "application/json";
+        }
+        if (dataType == "kml") {
+            format = "kml";
+        }
+        if (dataType == "csv") {
+            format = "csv"
+        }
+
+    var what = $('input[name=radio-areas]:checked').val();
+
+    if (what == "all") {
+        var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas&maxFeatures=10000&outputFormat=" + format;
+        window.open(url, config = "toolbar=0");
+    }
+    else {
+        var sac_tuple = "(";
+        for (var i = 0; i < clickedSACList.length; i++){
+            sac_tuple += "'" + clickedSACList[i] + "',";
+        }
+
+        sac_tuple = sac_tuple.replace(/,$/, "");
+        sac_tuple += ")";
+
+        var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas&maxFeatures=10000&outputFormat=" + format + "&cql_filter=sac+IN+" + sac_tuple;
+        window.open(url, config = "toolbar=0");
+
+    }
+}
+
+function setWhatToDownload() {
+    if (clickedSACData.length == 0) {
+        $('#all-areas').prop('checked',true);
+        $('#selected-areas').prop('checked', false);
+    }
+    else {
+        $('#all-areas').prop('checked',false);
+        $('#selected-areas').prop('checked', true);
+    }
+}

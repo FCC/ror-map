@@ -16,6 +16,7 @@
       <script src="js/vendor/respond.min.js"></script>
       <script src="js/libs/selectivizr-min.js"></script>
 <![endif]-->
+
 </head>
 
 <body>
@@ -25,9 +26,13 @@
                 <h1>Rate of Return Map</h1>
                 <form>
                     <div id="search-field" class="input-group" style="margin-bottom: 10px;">
-                        <input id="input-location" class="form-control" type="search" placeholder="Enter Location">
-                        <span class="input-group-btn">                        
+                        <input id="input-location" class="form-control" type="search" placeholder="Enter Location" style="display:">
+                        <span class="input-group-btn" id="span-location-search" style="display:">                        
                             <button class="btn-search btn btn-default" type="submit" id="input-search" title="Enter Location" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-search"></span><span class="sr-only">Search</span></button>
+                        </span>
+                        <input id="input-sac" class="form-control" type="search" placeholder="Enter SAC" style="display:">
+                        <span class="input-group-btn" id="span-sac-search" style="display:">                        
+                            <button class="btn-search btn btn-default"  id="input-sac-search" title="Enter SAC" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-search"></span><span class="sr-only">Search</span></button>
                         </span>
                         <span class="input-group-btn">  
                             <button class="btn-geoLocation btn btn-default st" title="Get Current Location" data-toggle="tooltip" data-placement="top" id="btn-geoLocation" type="button" data-original-title="Get Current Location"><span class="icon-locate-1"></span><span class="sr-only">Get Current Location</span></button>
@@ -37,20 +42,23 @@
                 </form>
                 <div class="map-container">
                     <div id="map">
-                        <button id="download-btn-small" class="btn-mapCtrl btn-downloadAll btn btn-default" title="Download data for all areas" data-toggle="tooltip" data-placement="right">
+                        <button id="download-btn-small" class="btn-mapCtrl btn-downloadAll btn btn-default" title="Download Data" data-toggle="tooltip" data-placement="right">
                             <span class="glyphicon glyphicon-download"></span>
-                            <span class="sr-only">Download data for all areas"</span>
+                            <span class="sr-only">Download Data"</span>
                         </button>
                         <div id="download-menu-box" class="download-menu">
                             <div class="links-downloadAll">
-                                Download data for all areas:
+                                <input type="radio" name="radio-areas" id="all-areas" value="all" checked>All Areas  <input type="radio" name="radio-areas" id="selected-areas" value="selected"> Selected Areas
                                 <button class="btn btn-xs pull-right" type="button">
                                     <span class="glyphicon glyphicon-remove"></span>
                                 </button>
                                 <br>
                                 <a id="shapefile" href="#void" data-type="shape-zip">Shapefile</a> &nbsp;|&nbsp; <a id="geojson" href="#void" data-type="geojson">GeoJSON</a> &nbsp;|&nbsp; <a id="kml" href="#void" data-type="kml">KML</a> &nbsp;|&nbsp; <a id="csv" href="#void" data-type="csv">CSV</a>
                             </div>                                                    
-                        </div>                        
+                        </div>
+
+
+
                         <div class="map-legend">
                             <div class="legend" style="display: none;">
                                 <div class="map-legend-hd">
@@ -59,16 +67,16 @@
                                 </div>
                                 <dl class="dl-legend">
                                     <dt>
-                                        <div style="width: 15px; height: 15px; background-color: #b0e27a; border: solid 2px #000;"></div>
+                                        <div style="width: 15px; height: 15px; background-color: #AAAA00; border: solid 2px #FFFF00;"></div>
                                         </span>
                                     </dt>
-                                    <dd>SAC Areas</dd>
+                                    <dd>Study Areas</dd>
                                     <dt>
-                                        <div style="width: 15px; height: 15px; background-color: #b0e27a; border: solid 1px #fff;"></div>
+                                        <div style="width: 15px; height: 15px; background-color: #AAAA00; border: solid 2px #fff;"></div>
                                         </td>
                                         <td style="vertical-align: center; padding: 10px;">
                                     </dt>
-                                    <dd>SA Areas</dd>
+                                    <dd>Service Areas</dd>
                                     <dt>
                                         <div style="width: 15px; height: 15px; background-color: #fff; border: solid 1px #000; border-radius: 20px;"></div>
                                     </dt>
@@ -87,10 +95,15 @@
 						-->
                     </div>
                 </div>
-                <br>
+
+            
                 <section>
-                    <h2>About</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quis ea ducimus, eos natus autem, facilis fuga iusto facere dolore ex nostrum illo eum! Incidunt eum asperiores autem, aspernatur a consequuntur.</p>
+                    <h2>About <span style="float: right; font-size: 12px">Last updated date: 03/25/2015</span></h2>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quis ea ducimus, eos natus autem, facilis fuga iusto facere dolore ex nostrum illo eum! Incidunt eum asperiores autem, aspernatur a consequuntur.
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quis ea ducimus, eos natus autem, facilis fuga iusto facere dolore ex nostrum illo eum! Incidunt eum asperiores autem, aspernatur a consequuntur.
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quis ea ducimus, eos natus autem, facilis fuga iusto facere dolore ex nostrum illo eum! Incidunt eum asperiores autem, aspernatur a consequuntur.
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quis ea ducimus, eos natus autem, facilis fuga iusto facere dolore ex nostrum illo eum! Incidunt eum asperiores autem, aspernatur a consequuntur.
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quis ea ducimus, eos natus autem, facilis fuga iusto facere dolore ex nostrum illo eum! Incidunt eum asperiores autem, aspernatur a consequuntur.</p>
                 </section>
                 <br>
             </div>
@@ -106,6 +119,93 @@
     <script src="https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.js"></script>
     <script src="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-pip/v0.0.2/leaflet-pip.js"></script>
     <script src="js/app.js"></script>
+
+
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="http://jqueryui.com/autocomplete/resources/demos/style.css">
+
+
+<script>
+
+$( "#input-sac" ).autocomplete({
+source: function( request, response ) {
+
+var sac = request.term
+
+var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas_sac&count=25&propertyName=sac&outputFormat=text/javascript&sortBy=sac&cql_filter=sac+like+'" + sac + "%25'";
+
+$.ajax({
+type: "GET",
+url: url,
+dataType: "jsonp",
+jsonpCallback: "parseResponse",
+success: function( data ) {
+    var features = data.features;
+    sac_list = [];
+    for (var i = 0; i < features.length; i++) {
+        sac_list.push(features[i].properties.sac);
+    }
+
+response( sac_list );
+}
+});
+},
+minLength: 2,
+select: function( event, ui ) {
+    setTimeout(function() {getSAC();}, 200);
+},
+open: function() {
+$( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+},
+close: function() {
+$( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+}
+});
+
+function getSAC() {
+    var sac = $("#input-sac").val();
+    var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas_sac&count=1&outputFormat=text/javascript&cql_filter=sac='" + sac + "'";
+
+    //alert(url)
+    $.ajax({
+type: "GET",
+url: url,
+dataType: "jsonp",
+jsonpCallback: "parseResponse",
+success: function( data ) {
+//alert(data.totalFeatures)
+    var feature = data.features[0];
+    var bbox = feature.properties.bbox;
+    var southWest = L.latLng(bbox[0], bbox[1]),
+    northEast = L.latLng(bbox[2], bbox[3]),
+    bounds = L.latLngBounds(southWest, northEast);
+    //alert(bounds)
+    clickedPolygon1 = L.mapbox.featureLayer(feature).setStyle(clickedPolygonOption).addTo(map);
+    //alert(clickedPolygon1)
+    clickedPolygon1.setZIndex(999)
+    map.fitBounds(bounds)
+    var center_lat = (bbox[0] + bbox[2]) / 2;
+    var center_lon = (bbox[1] + bbox[3]) / 2;
+    selectedMarker = L.marker([center_lat, center_lon], {
+    icon: L.mapbox.marker.icon({
+        'marker-size': 'large',
+        'marker-symbol': '',
+        'marker-color': '#fa0'
+    })
+}).addTo(map);
+
+}
+
+});
+
+
+}
+
+</script>
+
+
 </body>
 
 </html>
