@@ -434,10 +434,10 @@ function clickPolygonSAC(data) {
          $("#download_display_div").hide();
      });
 
-     $("#btn-download").on("click", function(e) {
-         e.preventDefault();
-         downloadData();
-     });
+     // $("#btn-download").on("click", function(e) {
+     //     e.preventDefault();
+     //     downloadData();
+     // });
 
      $("#download_select").on("change", function(e) {
          e.preventDefault();
@@ -459,85 +459,155 @@ function clickPolygonSAC(data) {
 
      });
 
-     // $("#input-sac").on("change", function(e) {
-     //     e.preventDefault();
-     //     alert('change');
-     // });
+
+    $( "#input-sac" ).autocomplete({
+        source: function( request, response ) {
+
+        var sac = request.term
+
+        var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas_sac&count=25&propertyName=sac&outputFormat=text/javascript&sortBy=sac&cql_filter=sac+like+'" + sac + "%25'";
+
+        $.ajax({
+        type: "GET",
+        url: url,
+        dataType: "jsonp",
+        jsonpCallback: "parseResponse",
+        success: function( data ) {
+            var features = data.features;
+            sac_list = [];
+            for (var i = 0; i < features.length; i++) {
+                sac_list.push(features[i].properties.sac);
+            }
+
+        response( sac_list );
+        }
+        });
+        },
+        minLength: 2,
+        select: function( event, ui ) {
+            setTimeout(function() {getSAC();}, 200);
+        },
+        open: function() {
+        $( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+        },
+        close: function() {
+        $( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+        }
+        });
+
+        function getSAC() {
+            var sac = $("#input-sac").val();
+            var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas_sac&count=1&outputFormat=text/javascript&cql_filter=sac='" + sac + "'";
+
+            //alert(url)
+            $.ajax({
+        type: "GET",
+        url: url,
+        dataType: "jsonp",
+        jsonpCallback: "parseResponse",
+        success: function( data ) {
+        //alert(data.totalFeatures)
+            var feature = data.features[0];
+            var bbox = feature.properties.bbox;
+            var southWest = L.latLng(bbox[0], bbox[1]),
+            northEast = L.latLng(bbox[2], bbox[3]),
+            bounds = L.latLngBounds(southWest, northEast);
+            //alert(bounds)
+            clickedPolygon1 = L.mapbox.featureLayer(feature).setStyle(clickedPolygonOption).addTo(map);
+            //alert(clickedPolygon1)
+            clickedPolygon1.setZIndex(999)
+            map.fitBounds(bounds)
+            var center_lat = (bbox[0] + bbox[2]) / 2;
+            var center_lon = (bbox[1] + bbox[3]) / 2;
+            selectedMarker = L.marker([center_lat, center_lon], {
+            icon: L.mapbox.marker.icon({
+                'marker-size': 'large',
+                'marker-symbol': '',
+                'marker-color': '#fa0'
+            })
+        }).addTo(map);
+
+        }
+
+        });
+
+
+        }
 
 
 
  }
 
- function downloadData(e) { console.log(e);
-     var downloadType = $('input[name=download-type]:checked').val();
-     var sac = dataCredential.sac;
-     var sa = dataCredential.sa;
-     var node0sourc = dataCredential.node0sourc;
+ // function downloadData(e) { console.log(e);
+ //     var downloadType = $('input[name=download-type]:checked').val();
+ //     var sac = dataCredential.sac;
+ //     var sa = dataCredential.sa;
+ //     var node0sourc = dataCredential.node0sourc;
 
-     /*if (downloadType == "area" && sac == undefined) {
-         var text = "Please click on map to select an area";
-         $("#warning-display").html(text);
-         return;
-     }*/
+ //     /*if (downloadType == "area" && sac == undefined) {
+ //         var text = "Please click on map to select an area";
+ //         $("#warning-display").html(text);
+ //         return;
+ //     }*/
 
-     var dataType = e.currentTarget.id;;
+ //     var dataType = e.currentTarget.id;;
 
-     if (dataType == "") {
-         var text = "Please select a data type";
-         $("#warning-display").html(text);
-         return;
-     } else {
-         if (dataType == "shapefile") {
-             format = "shape-zip";
-         }
-         if (dataType == "geojson") {
-             format = "application/json";
-         }
-         if (dataType == "kml") {
-             format = "kml";
-         }
-         if (dataType == "csv") {
-             format = "csv"
-         }
+ //     if (dataType == "") {
+ //         var text = "Please select a data type";
+ //         $("#warning-display").html(text);
+ //         return;
+ //     } else {
+ //         if (dataType == "shapefile") {
+ //             format = "shape-zip";
+ //         }
+ //         if (dataType == "geojson") {
+ //             format = "application/json";
+ //         }
+ //         if (dataType == "kml") {
+ //             format = "kml";
+ //         }
+ //         if (dataType == "csv") {
+ //             format = "csv"
+ //         }
 
-         var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas&maxFeatures=50&outputFormat=" + format + "&cql_filter=sac='" + sac + "'+AND+sa='" + sa + "'+AND+node0sourc='" + node0sourc + "'";
+ //         var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas&maxFeatures=50&outputFormat=" + format + "&cql_filter=sac='" + sac + "'+AND+sa='" + sa + "'+AND+node0sourc='" + node0sourc + "'";
 
-         window.open(url, config = "toolbar=0");
-     }
- }
+ //         window.open(url, config = "toolbar=0");
+ //     }
+ // }
 
- function downloadAllData(e) { console.log(e);
-     var downloadType = $('input[name=download-type]:checked').val();
-     var sac = dataCredential.sac;
-     var sa = dataCredential.sa;
-     var node0sourc = dataCredential.node0sourc;
+ // function downloadAllData(e) { console.log(e);
+ //     var downloadType = $('input[name=download-type]:checked').val();
+ //     var sac = dataCredential.sac;
+ //     var sa = dataCredential.sa;
+ //     var node0sourc = dataCredential.node0sourc;
 
-     /*if (downloadType == "area" && sac == undefined) {
-         var text = "Please click on map to select an area";
-         $("#warning-display").html(text);
-         return;
-     }*/
+ //     /*if (downloadType == "area" && sac == undefined) {
+ //         var text = "Please click on map to select an area";
+ //         $("#warning-display").html(text);
+ //         return;
+ //     }*/
 
-     var dataType = $(e.currentTarget).attr('data-type');
+ //     var dataType = $(e.currentTarget).attr('data-type');
 
-     if (dataType == "shapefile") {
-             format = "shape-zip";
-         }
-         if (dataType == "geojson") {
-             format = "application/json";
-         }
-         if (dataType == "kml") {
-             format = "kml";
-         }
-         if (dataType == "csv") {
-             format = "csv"
-         }
+ //     if (dataType == "shapefile") {
+ //             format = "shape-zip";
+ //         }
+ //         if (dataType == "geojson") {
+ //             format = "application/json";
+ //         }
+ //         if (dataType == "kml") {
+ //             format = "kml";
+ //         }
+ //         if (dataType == "csv") {
+ //             format = "csv"
+ //         }
 
-     var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas&maxFeatures=10000&outputFormat=" + format;
+ //     var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas&maxFeatures=10000&outputFormat=" + format;
 
-	 window.open(url, config = "toolbar=0");
+	//  window.open(url, config = "toolbar=0");
 
- }
+ // }
 
  function locChange() {
 
@@ -591,9 +661,9 @@ function clickPolygonSAC(data) {
         $('.btn-legend').show();
     });
 
-    $('.links-download').on('click', 'a', function(e) {
-        downloadData(e);
-    });
+    // $('.links-download').on('click', 'a', function(e) {
+    //     downloadData(e);
+    // });
 
     $('.links-downloadAll').on('click', 'a', function(e) {
         //downloadAllData(e);
@@ -689,3 +759,5 @@ function setWhatToDownload() {
         $('#selected-areas').prop('checked', true);
     }
 }
+
+
