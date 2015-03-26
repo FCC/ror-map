@@ -2,20 +2,20 @@
 <html class="no-js" lang="en">
 
 <head>
+	
+	<title>Rate of Return Map &laquo; FCC</title>
+	
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Rate of Return Map &laquo; FCC</title>
     <meta name="description" content="FCC Rate of Return Map">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="shortcut icon" href="img/fcc_favicon.ico" type="image/x-icon">
+	
+    <link href="img/fcc_favicon.ico" rel="shortcut icon" type="image/x-icon">
+	<link href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet">
+	
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/mapbox.css" rel="stylesheet">
-    <link href="css/app-theme.css" rel="stylesheet">
-    <!--[if lt IE 9]>
-      <script src="js/vendor/html5shiv.js"></script>
-      <script src="js/vendor/respond.min.js"></script>
-      <script src="js/libs/selectivizr-min.js"></script>
-<![endif]-->
+    <link href="css/app.css" rel="stylesheet">	
 
 </head>
 
@@ -56,9 +56,6 @@
                                 <a id="shapefile" href="#void" data-type="shape-zip">Shapefile</a> &nbsp;|&nbsp; <a id="geojson" href="#void" data-type="geojson">GeoJSON</a> &nbsp;|&nbsp; <a id="kml" href="#void" data-type="kml">KML</a> &nbsp;|&nbsp; <a id="csv" href="#void" data-type="csv">CSV</a>
                             </div>                                                    
                         </div>
-
-
-
                         <div class="map-legend">
                             <div class="legend" style="display: none;">
                                 <div class="map-legend-hd">
@@ -87,16 +84,12 @@
                         </div>
                     </div>
                     <div id="tooltip_box_div" class="map-toolTip" style="z-index: 0">
-                        <div id="feature_display_div" class="tooltipTxt"></div>
-						<!--
-                        <div class="links-download">
-                            <a id="shapefile" href="#void">Shapefile</a> &nbsp;|&nbsp; <a id="geojson" href="#void">GeoJSON</a> &nbsp;|&nbsp; <a id="kml" href="#void">KML</a> &nbsp;|&nbsp; <a id="csv" href="#void">CSV</a>  
-                        </div>
-						-->
+                        <div id="feature_display_div" class="tooltipTxt"></div>				
                     </div>
-                </div>
-
-            
+                </div>   
+				<section id="include-about">
+				</section>
+				<!--				
                 <section>
                     <h2>About <span style="float: right; font-size: 12px">Last updated date: 03/25/2015</span></h2>
                     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quis ea ducimus, eos natus autem, facilis fuga iusto facere dolore ex nostrum illo eum! Incidunt eum asperiores autem, aspernatur a consequuntur.
@@ -105,35 +98,27 @@
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quis ea ducimus, eos natus autem, facilis fuga iusto facere dolore ex nostrum illo eum! Incidunt eum asperiores autem, aspernatur a consequuntur.
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quis ea ducimus, eos natus autem, facilis fuga iusto facere dolore ex nostrum illo eum! Incidunt eum asperiores autem, aspernatur a consequuntur.</p>
                 </section>
+				-->
                 <br>
             </div>
         </div>
-    </main>
-    
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script>
-    window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')
-    </script>
-    
-    <script src="js/vendor/bootstrap.min.js"></script>
-    <script src="https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.js"></script>
-    <script src="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-pip/v0.0.2/leaflet-pip.js"></script>
-    <script src="js/app.js"></script>
+    </main> 
+	
+	<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 
-
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-<link rel="stylesheet" href="http://jqueryui.com/autocomplete/resources/demos/style.css">
-
-
-<script>
-
-
-
-</script>
-
+	<script src="js/vendor/bootstrap.min.js"></script>	
+	
+	<script src="//api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.js"></script>
+    <script src="//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-pip/v0.0.2/leaflet-pip.js"></script>
+	
+	<script src="js/app.js"></script>	
+	
+	<script> 
+		$(function(){
+		  $("#include-about").load("about.html"); 
+		});
+    </script> 
 
 </body>
-
 </html>

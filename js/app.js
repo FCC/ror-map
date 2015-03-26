@@ -160,8 +160,6 @@
             return;
 		}
 
-
-
         //SA
         var url_sa = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas&maxFeatures=1&outputFormat=text/javascript&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
 
@@ -187,13 +185,9 @@
             }
         });
 
-
-
 	});
 
-
  }
-
 
  $('#btn-street').on('click', function(e) {
      e.preventDefault();
@@ -244,60 +238,65 @@
 
      if (dataNowSAC.totalFeatures == 0) {
         if (map.hasLayer(shownPolygonSAC)) {
-         map.removeLayer(shownPolygonSAC);
-         return;
-     }
+			 map.removeLayer(shownPolygonSAC);
+			 return;
+		 }
+	 } 	
 
-     } 
+	var feature_id;
+	if (data.features.length > 0) {
+		 var feature_id = data.features[0].id.replace(/\..*$/, '');
+		 if (feature_id == "ror_service_areas") {
+			return;
+		 }
 
-     var id = data.features[0].id.replace(/\..*$/, '');
-     if (id == "ror_service_areas") {
-        return;
-     }
+		 if (map.hasLayer(shownPolygonSAC)) {
+			 map.removeLayer(shownPolygonSAC)
+		 }
 
-     if (map.hasLayer(shownPolygonSAC)) {
-         map.removeLayer(shownPolygonSAC)
-     }
+		 shownPolygonSAC = L.mapbox.featureLayer(dataNowSAC).setStyle(drawnPolygonOptionSAC).addTo(map);
+		 shownPolygonSAC.on("click", function(e) {
+			 clickPolygonSAC(e);
+		 });
 
-
-     shownPolygonSAC = L.mapbox.featureLayer(dataNowSAC).setStyle(drawnPolygonOptionSAC).addTo(map);
-     shownPolygonSAC.on("click", function(e) {
-         clickPolygonSAC(e);
-     });
-
-     shownPolygonSAC.setZIndex(999);
-     var text = "SAC:" + dataNowSAC.features[0].properties.sac + "<br> SA:" + dataNowSAC.features[0].properties.sa + "<br>SOURCE: " + dataNowSAC.features[0].properties.node0sourc;
-
+		 shownPolygonSAC.setZIndex(999);
+		 var text = "SAC:" + dataNowSAC.features[0].properties.sac + "<br> SA:" + dataNowSAC.features[0].properties.sa + "<br>SOURCE: " + dataNowSAC.features[0].properties.node0sourc;
+	}
  }
 
 
-  function displayPolygonSA(data) {
+function displayPolygonSA(data) {
      dataNowSA = data;
+	
+	var feature_id;
+	if (data.features.length > 0) {
+		
+		var feature_id = data.features[0].id.replace(/\..*$/, '');
+		 if (feature_id == "ror_service_areas_sac") {
+			return;
+		 }
+	 
 
-    var id = data.features[0].id.replace(/\..*$/, '');
-     if (id == "ror_service_areas_sac") {
-        return;
-     }
+		 if (map.hasLayer(shownPolygonSA)) {
+			 map.removeLayer(shownPolygonSA)
+		 }
 
-     if (map.hasLayer(shownPolygonSA)) {
-         map.removeLayer(shownPolygonSA)
-     }
+		 if (dataNowSA.totalFeatures == 0) {
+			 $("#tooltip_box_div").hide();
+			 return;
+		 }
 
-     if (dataNowSA.totalFeatures == 0) {
-         $("#tooltip_box_div").hide();
-         return;
-     }
+		 shownPolygonSA = L.mapbox.featureLayer(dataNowSA).setStyle(drawnPolygonOptionSA).addTo(map);
+		 shownPolygonSA.on("click", function(e) {
+			  clickPolygonSA(e);
+		  });
 
-     shownPolygonSA = L.mapbox.featureLayer(dataNowSA).setStyle(drawnPolygonOptionSA).addTo(map);
-     shownPolygonSA.on("click", function(e) {
-          clickPolygonSA(e);
-      });
+		 shownPolygonSA.setZIndex(999);
+		 var text = "Study Area Code:" + dataNowSA.features[0].properties.sac + "<br> Service Area:" + dataNowSA.features[0].properties.sa + "<br>Source: " + dataNowSA.features[0].properties.node0sourc;
 
-     shownPolygonSA.setZIndex(999);
-     var text = "Study Area Code:" + dataNowSA.features[0].properties.sac + "<br> Service Area:" + dataNowSA.features[0].properties.sa + "<br>Source: " + dataNowSA.features[0].properties.node0sourc;
-
-     $("#feature_display_div").html(text);
-     $("#tooltip_box_div").show();
+		 $("#feature_display_div").html(text);
+		 $("#tooltip_box_div").show();
+	 }
  }
 
  function clickPolygonSA(data) { console.log(data);
