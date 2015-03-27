@@ -21,15 +21,15 @@
  var drawnPolygonOptionSAC = {
      'color': '#ffff21',
      'fillColor': '#ffff21',
-     'weight': 4,
-     'fillOpacity': 0.6
+     'weight': 5,
+     'fillOpacity': 0.2
  }
 
   var drawnPolygonOptionSA = {
      'color': '#fff',
      'fillColor': '#999',
-     'weight': 2,
-     'fillOpacity': 0.4
+     'weight': 3,
+     'fillOpacity': 0.3
  }
 
  // var clickedPolygonOption = {
