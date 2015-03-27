@@ -25,6 +25,12 @@ footer a { font-weight: bold; }
 footer a:hover { text-decoration: underline; }
 footer .bull { font-size: 16px; margin: 0 10px; }
 
+/* =============================================================================
+   Search
+   ========================================================================== */
+
+.ui-autocomplete { z-index:9999999 !important;}  
+
 .search-bar, .search-btns { display: inline; }
 
 /* =============================================================================
