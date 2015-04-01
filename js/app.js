@@ -475,6 +475,7 @@ function clickPolygonSAC(e) {
 
 
     $("#input-search-switch").on("click", function(e) {
+        e.preventDefault();
 
         $("#input-sac").val('');
         $("#input-location").val('');
