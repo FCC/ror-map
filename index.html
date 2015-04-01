@@ -26,15 +26,18 @@
                 <h1>Rate of Return Map</h1>
                 <form>
                     <div id="search-field" class="input-group" style="margin-bottom: 10px;">
-					<!--
-                        <input id="input-location" class="form-control" type="search" placeholder="Enter Location" style="display:">
-                        <span class="input-group-btn" id="span-location-search" style="display:">                        
+					
+                        <input id="input-location" class="form-control" type="search" placeholder="Enter Location" style="display: none">
+                        <span class="input-group-btn" id="span-location-search" style="display: none">                        
                             <button class="btn-search btn btn-default" type="submit" id="input-search" title="Enter Location" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-search"></span><span class="sr-only">Search</span></button>
                         </span>
-						-->
-                        <input id="input-sac" class="form-control" type="search" placeholder="Enter SAC" style="display:">
-                        <span class="input-group-btn" id="span-sac-search" style="display:">                        
+						
+                        <input id="input-sac" class="form-control" type="search" placeholder="Enter SAC" style="display: block">
+                        <span class="input-group-btn" id="span-sac-search" style="display: table-cell">                        
                             <button class="btn-search btn btn-default"  id="input-sac-search" title="Enter SAC" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-search"></span><span class="sr-only">Search</span></button>
+                        </span>
+                        <span class="input-group-btn" id="span-search-switch" style="display:">                        
+                            <button class="btn-search btn btn-default"  id="input-search-switch" title="Toggle SAC/Address" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-retweet"></span><span class="sr-only">Change</span></button>
                         </span>
                         <span class="input-group-btn">  
                             <button class="btn-geoLocation btn btn-default st" title="Get Current Location" data-toggle="tooltip" data-placement="top" id="btn-geoLocation" type="button" data-original-title="Get Current Location"><span class="icon-locate-1"></span><span class="sr-only">Get Current Location</span></button>
@@ -48,9 +51,10 @@
                             <span class="glyphicon glyphicon-download"></span>
                             <span class="sr-only">Download Data"</span>
                         </button>
-                        <div id="download-menu-box" class="download-menu">
+                        <div id="download-menu-box" class="download-menu" style="width: 300px">
                             <div class="links-downloadAll">
-                                <input type="radio" name="radio-areas" id="all-areas" value="all" checked>All Areas  <input type="radio" name="radio-areas" id="selected-areas" value="selected"> Selected Areas
+                                <input type="radio" name="radio-areas" id="all-areas" value="all" checked>All Areas 
+                                <input type="radio" name="radio-areas" id="selected-areas" value="selected"> Selected Areas
                                 <button class="btn btn-xs pull-right" type="button">
                                     <span class="glyphicon glyphicon-remove"></span>
                                 </button>
@@ -58,28 +62,37 @@
                                 <a id="shapefile" href="#void" data-type="shape-zip">Shapefile</a> &nbsp;|&nbsp; <a id="geojson" href="#void" data-type="geojson">GeoJSON</a> &nbsp;|&nbsp; <a id="kml" href="#void" data-type="kml">KML</a> &nbsp;|&nbsp; <a id="csv" href="#void" data-type="csv">CSV</a>
                             </div>                                                    
                         </div>
-                        <div class="map-legend">
+                        <div class="map-legend" style="width: 300px">
                             <div class="legend" style="display: none;">
                                 <div class="map-legend-hd">
                                     <span class="icon-legends-2"></span> <span class="map-legend-name">Map Legend</span>
                                     <button class="btn-closeLegend btn btn-xs pull-right"><span class="glyphicon glyphicon-remove"></span> <span class="sr-only">Hide legend</span></button>
                                 </div>
-                                <dl class="dl-legend">
-                                    <dt>
-                                        <div style="width: 15px; height: 15px; background-color: #AAAA00; border: solid 2px #FFFF00;"></div>
-                                        </span>
+                                <dl class="dl-legend" style="background-color: #cccccc; margin: 1px; padding: 3px;">
+                                    <dt style="vertical-align: center">
+                                        <div style="width: 20px; height: 2px; background-color: #000000; margin-top: 5px;"></div>
+                                        
                                     </dt>
-                                    <dd>Study Areas</dd>
+                                    <dd>Study Area Border</dd>
                                     <dt>
-                                        <div style="width: 15px; height: 15px; background-color: #AAAA00; border: solid 2px #fff;"></div>
-                                        </td>
-                                        <td style="vertical-align: center; padding: 10px;">
-                                    </dt>
-                                    <dd>Service Areas</dd>
+                                        <div style="width: 20px; height: 2px; background-color: #ffffff; margin-top: 5px"></div>
+                                        </dt>
+
+                                    <dd>Service Area Border</dd>
                                     <dt>
-                                        <div style="width: 15px; height: 15px; background-color: #fff; border: solid 1px #000; border-radius: 20px;"></div>
+                                        <div style="width: 15px; height: 15px; background-color: #559955;  border: solid 1px #ffffff; background: repeating-linear-gradient(135deg, #559955, #559955 3px, #ffffff 3px, #ffffff 4px);"></div>
                                     </dt>
-                                    <dd>Central Offices</dd>
+
+                                    <dd>SA With Office</dd>
+                                    <dt>
+                                        <div style="width: 15px; height: 15px; background-color: #559955; border: solid 1px #ffffff"></div>
+                                    </dt>
+
+                                    <dd>SA W/O Office</dd>
+                                    <dt>
+                                        <div style="width: 15px; height: 15px; background-color: #fff; border: solid 1px #000; border-radius: 20px; margin-left: 0px;"></div>
+                                    </dt>
+                                    <dd>Central Office</dd>
                                 </dl>
                             </div>
                             <button title="" data-placement="right" data-toggle="tooltip" class="btn-legend btn btn-default btn-xs" data-original-title="Display&nbsp;Map&nbsp;Legend" style="display: inline-block;"><span class="icon-legends-2"></span><span class="sr-only">Legend</span></button>
