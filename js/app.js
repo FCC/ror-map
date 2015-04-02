@@ -43,7 +43,7 @@
      'color': '#00ff00',
      'fillColor': '#00ff00',
      'weight': 4,
-     'fillOpacity': 0.6
+     'fillOpacity': 0.25
  }
 
  var southWest = L.latLng(10.948876, -176.592862),
@@ -209,12 +209,8 @@
 				success: function(data) {
 					displayPolygonSA(data);
 				}
-			});
-
-			
-			
+			});	
 		}
-
 	});
 
  }
@@ -341,7 +337,8 @@ function displayPolygonSA(data) {
          "sa": dataNowSA.features[0].properties.sa,
          "node0sourc": dataNowSA.features[0].properties.node0sourc
      };
-
+	
+	/*
      var index = $.inArray(dataCredential.sac, clickedSACList);
      if (index < 0) {
         clickedSACList.push(dataCredential.sac);
@@ -353,6 +350,13 @@ function displayPolygonSA(data) {
         //alert('deleted')
         //alert('num sac data=' + clickedSACData.length)
      }
+	 */
+	 
+ 	clickedSACList.length = 0;
+	clickedSACData.length = 0;
+	
+	clickedSACList.push(dataCredential.sac);
+	clickedSACData.push(dataNowSAC);
 
      //alert(clickedSACList);
 
@@ -372,29 +376,40 @@ function displayPolygonSA(data) {
 
 function clickPolygonSAC(e) {
 
-        var index = $.inArray(dataNowSAC.features[0].properties.sac, clickedSACList);
-      
-         if (index < 0) {
-            clickedSACList.push(dataNowSAC.features[0].properties.sac);
-            clickedSACData.push(dataNowSAC);
-         }
-         else {
-            clickedSACList.splice(index, 1);
-            clickedSACData.splice(index, 1);
-         }
+	/*
+	var index = $.inArray(dataNowSAC.features[0].properties.sac, clickedSACList);
+  
+	 if (index < 0) {
+		clickedSACList.push(dataNowSAC.features[0].properties.sac);
+		clickedSACData.push(dataNowSAC);
+	 }
+	 else {
+		clickedSACList.splice(index, 1);
+		clickedSACData.splice(index, 1);
+	 }
+	 */
+	 
+	clickedSACList.length = 0;
+	clickedSACData.length = 0;
+	 
+	clickedSACList.push(dataNowSAC.features[0].properties.sac);
+	clickedSACData.push(dataNowSAC);
 
-         updateSACDownloadBox();
+	 updateSACDownloadBox();
 
 }
 
  function setListener() {
 
-     $("#input-search").on("click", function(e) {
+     $("#input-loc-search").on("click", function(e) {
          e.preventDefault();
          locChange();
      });
-
-
+	 
+	 $("#input-sac-search").on("click", function(e) {
+         e.preventDefault();
+         getSAC();
+     });
 
      $('#btn-geoLocation').click(function(event) {
          if (navigator.geolocation) {
@@ -464,6 +479,7 @@ function clickPolygonSAC(e) {
         minLength: 2,
         select: function( event, ui ) {
             setTimeout(function() {getSAC();}, 200);
+			getSAC();
         },
         open: function() {
 			$( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
@@ -471,67 +487,60 @@ function clickPolygonSAC(e) {
         close: function() {
 			$( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
         }
-        });
+	});
 
-
-    $("#input-search-switch").on("click", function(e) {
-        e.preventDefault();
+    $("#input-search-switch").change(function(e) {
+        e.preventDefault();	
 
         $("#input-sac").val('');
         $("#input-location").val('');
-
-        if ($("#input-sac").css('display') == 'block') {
-        $("#input-sac").css('display', 'none');
-        $("#span-sac-search").css('display', 'none');
-        $("#input-location").css('display', 'block');
-        $("#span-location-search").css('display', 'table-cell');
-
+		
+		var search = $( "#input-search-switch" ).val();		
+		
+        if (search == 'loc') {
+			$("#input-sac").css('display', 'none');
+			$("#span-sac-search").css('display', 'none');
+			
+			$("#input-location").css('display', 'block');
+			$("#span-location-search").css('display', 'table-cell');
         }
         else {
             $("#input-sac").css('display', 'block');
             $("#span-sac-search").css('display', 'table-cell');
+			
             $("#input-location").css('display', 'none');
             $("#span-location-search").css('display', 'none');
         }
-
     });
-
-
-
-
  }
 
-
 function getSAC() {
-        var sac = $("#input-sac").val();
-        var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas_sac_new&count=1&outputFormat=text/javascript&cql_filter=sac='" + sac + "'";
 
-        //alert(url)
-        $.ajax({
-    type: "GET",
-    url: url,
-    dataType: "jsonp",
-    jsonpCallback: "parseResponse",
-    success: function( data ) {
-    //alert(data.totalFeatures)
-        var feature = data.features[0];
-        var bbox = feature.properties.bbox;
-        var southWest = L.latLng(bbox[0], bbox[1]),
-        northEast = L.latLng(bbox[2], bbox[3]),
-        bounds = L.latLngBounds(southWest, northEast);
-        //alert(bounds)
-        //clickedPolygon1 = L.mapbox.featureLayer(feature).setStyle(clickedPolygonOption).addTo(map);
-        //alert(clickedPolygon1)
-        //clickedPolygon1.setZIndex(999);
-        map.fitBounds(bounds);
+	var sac = $("#input-sac").val();
+	var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas_sac_new&count=1&outputFormat=text/javascript&cql_filter=sac='" + sac + "'";
 
-    }
-
-    });
-
+	//alert(url)
+	$.ajax({
+		type: "GET",
+		url: url,
+		dataType: "jsonp",
+		jsonpCallback: "parseResponse",
+		success: function( data ) {
+		//alert(data.totalFeatures)
+			var feature = data.features[0];
+			var bbox = feature.properties.bbox;
+			var southWest = L.latLng(bbox[0], bbox[1]),
+			northEast = L.latLng(bbox[2], bbox[3]),
+			bounds = L.latLngBounds(southWest, northEast);
+			//alert(bounds)
+			//clickedPolygon1 = L.mapbox.featureLayer(feature).setStyle(clickedPolygonOption).addTo(map);
+			//alert(clickedPolygon1)
+			//clickedPolygon1.setZIndex(999);
+			map.fitBounds(bounds);
+		}
+	});
 
 }
-
  
  function locChange() {
 
@@ -599,7 +608,6 @@ function getSAC() {
 
 });
 
-
 function updateSACDownloadBox() {
 
     for (var i = 0; i < clickedPolygonList.length; i++) {
@@ -612,25 +620,26 @@ function updateSACDownloadBox() {
 
     clickedPolygonList = [];
     for (var i = 0; i < clickedSACData.length; i++) {
+	
         var poly = L.mapbox.featureLayer(clickedSACData[i]).setStyle(clickedPolygonOption).addTo(map);
+		
         clickedPolygonList.push(poly);
         clickedPolygonList[clickedPolygonList.length-1].on("click", function(e) {
 
-        var index = $.inArray(dataCredential.sac, clickedSACList);
-         if (index < 0) {
-            clickedSACList.push(dataCredential.sac);
-            clickedSACData.push(dataNowSAC);
-         }
-         else {
-            clickedSACList.splice(index, 1);
-            clickedSACData.splice(index, 1);
-         }
+			var index = $.inArray(dataCredential.sac, clickedSACList);
+			if (index < 0) {
+				clickedSACList.push(dataCredential.sac);
+				clickedSACData.push(dataNowSAC);
+			}
+			else {
+				clickedSACList.splice(index, 1);
+				clickedSACData.splice(index, 1);
+			}
 
-         updateSACDownloadBox();
+			updateSACDownloadBox();
 
-            });
-        }
-
+		});
+	}
 }
 
 function downloadSAC(e) {

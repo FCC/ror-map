@@ -61,7 +61,7 @@ footer .bull { font-size: 16px; margin: 0 10px; }
 .tooltipTxt { margin-bottom: 10px; }
 
 .btn-group { display: table-cell; }
-.btn-search { border-bottom-left-radius: 0; border-top-left-radius: 0; margin: 0 20px 0 -1px; }
+.btn-search { border-bottom-left-radius: 0; border-top-left-radius: 0; margin: 0 0px 0 -1px; }
 .btn-legend { border: 1px solid rgba(0, 0, 0, 0.4); border-radius: 3px; display: none; padding-bottom: 2px; padding-top: 4px; }
 .btn-mapCtrl { border: 1px solid rgba(0, 0, 0, 0.4); border-radius: 3px; left: 10px; display: inline; padding: 5px 4px 2px; position: absolute; z-index: 9;}
 
