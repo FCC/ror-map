@@ -1,12 +1,17 @@
- var map;
- var shownPolygonSAC;
- var shownPolygonSA;
- var clickedPolygon;
- var isInsideDrawnPolygonSAC = false;
- var isInsideDrawnPolygonSA = false;
- var clickedPolygonList = [];
- var clickedSACList = [];
- var clickedSACData = [];
+var map;
+var shownPolySAC;
+var shownPolySA;
+var clickedPoly;
+var isInsidePolyC = false;
+var isInsidePoly = false;
+
+var clickedPolyList = [];
+var clickedPolyList = [];
+var clickedPolyData = [];
+
+var codeNowSAC;
+var codeNowSA;
+
  var dataNowSAC = {
      "totalFeatures": 0
  };
@@ -14,32 +19,25 @@
      "totalFeatures": 0
  };
 
- var dataCredential = {};
- var xNow;
- var yNow;
+var dataCredential = {};
+var xNow;
+var yNow;
 
- var drawnPolygonOptionSAC = {
+ var shownPolyOptionSAC = {
      'color': '#ffff21',
      'fillColor': '#ffff21',
      'weight': 5,
      'fillOpacity': 0.2
  }
 
-  var drawnPolygonOptionSA = {
+  var shownPolyOptionSA = {
      'color': '#fff',
      'fillColor': '#999',
      'weight': 3,
      'fillOpacity': 0.3
  }
 
- // var clickedPolygonOption = {
- //     'color': '#65ff21',
- //     'fillColor': '#fff',
- //     'weight': 4,
- //     'fillOpacity': 0.25
- // }
-
-  var clickedPolygonOption = {
+  var clickedPolyOption = {
      'color': '#00ff00',
      'fillColor': '#00ff00',
      'weight': 4,
@@ -51,6 +49,7 @@
      bounds_us = L.latLngBounds(southWest, northEast);
 
  function createMap() {
+ 
      L.mapbox.accessToken = 'pk.eyJ1IjoiY29tcHV0ZWNoIiwiYSI6InMyblMya3cifQ.P8yppesHki5qMyxTc2CNLg';
      map = L.mapbox.map('map', 'nbm.i2op87g0', {
              attributionControl: true,
@@ -67,40 +66,20 @@
      var wms_ror_service_areas = L.tileLayer.wms('http://ldevtm-geo02:8080/geoserver/wms', {
          format: 'image/png',
          transparent: true,
-         layers: 'geo_swat:ror_service_areas_new'
+         layers: 'geo_swat:ror_sa'
      });
 
      var wms_ror_service_areas_sac = L.tileLayer.wms('http://ldevtm-geo02:8080/geoserver/wms', {
          format: 'image/png',
          transparent: true,
-         layers: 'geo_swat:ror_service_areas_sac_new'
+         layers: 'geo_swat:ror_sac'
      });
-
      
      var wms_ror_central_offices = L.tileLayer.wms('http://ldevtm-geo02:8080/geoserver/wms', {
          format: 'image/png',
          transparent: true,
-         layers: 'geo_swat:ror_central_offices_new'
-     });
-	 
-	 
-	 // var wfs_ror_central_offices = L.mapbox.featureLayer();
-	 	 
-	 // $.ajax({
-		// type: "GET",
-		// url: 'http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_central_offices&outputFormat=text/javascript',
-		// dataType: "jsonp",
-		// jsonpCallback: "parseResponse",
-		// success: function(data) {
-		
-		// 	for (var i = 0; i < data.features.length; i++) {
-		// 		data.features[i].properties['marker-color'] = '#7ebc64';
-		// 		data.features[i].properties['marker-size'] = 'small';
-		// 	}
-			
-		// 	wfs_ror_central_offices.setGeoJSON(data);		
-		// }
-	 // });
+         layers: 'geo_swat:ror_co'
+     }); 
 
      L.control.scale({
          position: 'bottomright'
@@ -128,14 +107,20 @@
 
      //wms_ror_service_areas.addTo(map);
 	 
-	 var gx = 0;
-	 var gy = 0;
-	 var nx, ny;
+	map.on("click", function(e) {
+		clickPoly(e);
+	}); 
+	 
+	 
+	var gx = 0;
+	var gy = 0;
+	var nx, ny;
+	var gsize = 16;
 	 
 	 map.on("mousemove", function(e){		
 		
-		nx = Math.floor(e.containerPoint.x/20);
-		ny = Math.floor(e.containerPoint.y/20);
+		nx = Math.floor(e.containerPoint.x/gsize);
+		ny = Math.floor(e.containerPoint.y/gsize);
 		
 		/*
 		document.getElementById('mapinfo').innerHTML = "<br> gx: " + gx +
@@ -145,7 +130,7 @@
 		*/
 		
 		if ((nx == gx) && (ny == gy) ){	
-		
+			// same grid
 		}
 		else {		
 			
@@ -154,62 +139,36 @@
 			
 			var lat = e.latlng.lat;
 			var lng = e.latlng.lng;
-
-			//SAC
-			var url_sac = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas_sac_new&maxFeatures=1&outputFormat=text/javascript&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
-
-			isInsideDrawnPolygonSAC = false;
-			if (map.hasLayer(shownPolygonSAC)) {
-				 var results = leafletPip.pointInLayer([lng, lat], shownPolygonSAC);
-				if (results.length > 0) {
-					isInsideDrawnPolygonSAC = true;
-				}
-			}
-
-			if (!isInsideDrawnPolygonSAC) {
-				$.ajax({
-					type: "GET",
-					url: url_sac,
-					dataType: "jsonp",
-					jsonpCallback: "parseResponse",
-					success: function(data) {
-						displayPolygonSAC(data);
-					}
-				});
-
-				$("#tooltip_box_div").hide();
-						
-				if (map.hasLayer(shownPolygonSA)) {
-					 map.removeLayer(shownPolygonSA);
-				 }
-
-				return;
-			}
+		
 
 			//SA
-			var url_sa = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas_new&maxFeatures=1&outputFormat=text/javascript&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
+			//var urlPolySA = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sa&maxFeatures=1&outputFormat=text/javascript&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
+			var urlPolySA = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sa&maxFeatures=1&outputFormat=text/javascript&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))&format_options=callback:callbackSA";
+			//var urlPolySA = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sa&maxFeatures=1&outputFormat=application/json&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
 
-			isInsideDrawnPolygonSA = false;
-			if (map.hasLayer(shownPolygonSA)) {
-				 var results = leafletPip.pointInLayer([lng, lat], shownPolygonSA);
+			isInsidePoly = false;
+			if (map.hasLayer(shownPolySA)) {
+				var results = leafletPip.pointInLayer([lng, lat], shownPolySA);
 				if (results.length > 0) {
-					isInsideDrawnPolygonSA = true;
+					isInsidePoly = true;
 				}
 			}
 
-			if (isInsideDrawnPolygonSA) {
-				return;
+			if ((!isInsidePoly) || (codeNowSAC != codeNowSA)) {			
+				
+				//console.log('ajax urlPolySA');
+				
+				$.ajax({
+					type: "GET",
+					url: urlPolySA,
+					dataType: "jsonp",
+					jsonpCallback: "callbackSA",
+					success: function(dataSA) {
+						//console.log('hoverPoly sa');
+						hoverPoly(dataSA, 'sa');
+					}
+				});	
 			}
-
-			$.ajax({
-				type: "GET",
-				url: url_sa,
-				dataType: "jsonp",
-				jsonpCallback: "parseResponse",
-				success: function(data) {
-					displayPolygonSA(data);
-				}
-			});	
 		}
 	});
 
@@ -258,146 +217,195 @@
      $('#btn-' + type).addClass('btn-baselayer-control-selected');
  }
 
+function hoverPoly(data, type) {
+	//console.log('hoverpoly type: ' + type);
+	if (type === 'sa') {		
+		//console.log('hoverpoly sa');
+		if (map.hasLayer(shownPolySA)) {
+			map.removeLayer(shownPolySA);
+		}
+		
+		dataNowSA = data;
+		
+		if (data.features.length > 0) {
+			
+			var featureSA_id = data.features[0].id.replace(/\..*$/, '');
+			//console.log('featureSA_id sa : '+ featureSA_id);
+			
+			if (featureSA_id == "ror_service_areas_sac") {
+				
+				//console.log('XXXXXXXXXX ror_service_areas_sac');				
+				return;
+			}
 
- function displayPolygonSAC(data) {
-     dataNowSAC = data;
+			if (dataNowSA.totalFeatures == 0) {
+				$("#tooltip_box_div").hide();
+				map.removeLayer(shownPolySA);
+				return;
+			}
+			
+			var sac = dataNowSA.features[0].properties.sac;
+			var sa = dataNowSA.features[0].properties.sa;
+			var company = dataNowSA.features[0].properties.company;
+			var source = dataNowSA.features[0].properties.node0sourc;
 
-     if (dataNowSAC.totalFeatures == 0) {
-        if (map.hasLayer(shownPolygonSAC)) {
-			 map.removeLayer(shownPolygonSAC);
-			 return;
-		 }
-	 } 	
+			shownPolySA = L.mapbox.featureLayer(dataNowSA).setStyle(shownPolyOptionSA).addTo(map);
+			shownPolySA.on("click", function(e) {
+				clickPoly(e);
+			});
 
-	var feature_id;
-	if (data.features.length > 0) {
-		 var feature_id = data.features[0].id.replace(/\..*$/, '');
-		 if (feature_id == "ror_service_areas") {
-			return;
-		 }
+			shownPolySA.setZIndex(999);
+			var text = "Study Area Code:" + sac + 
+				"<br/ > Company:" + company + 
+				"<br/ > Service Area:" + sa + 
+				"<br />Source: " + source;
 
-		 if (map.hasLayer(shownPolygonSAC)) {
-			 map.removeLayer(shownPolygonSAC);
-		 }
+			$("#feature_display_div").html(text);
+			$("#tooltip_box_div").show();
+			
+			// get sac layer
+			
+			codeNowSA = sac;
+			
+			//console.log('before codeNowSA  :' + codeNowSA);
+			//console.log('before codeNowSAC :' + codeNowSAC);
+			if (codeNowSAC != codeNowSA) {				
+				
+				//console.log('ajax urlPolySAC');
+				
+				//var urlPolySAC = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sac&maxFeatures=1&outputFormat=text/javascript&cql_filter=sac="+ sac;
+				var urlPolySAC = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sac&maxFeatures=1&outputFormat=text/javascript&cql_filter=sac="+ sac +"&format_options=callback:callbackSAC";
+				//var urlPolySAC = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sac&maxFeatures=1&outputFormat=application/json&cql_filter=sac="+sac;
 
-		 shownPolygonSAC = L.mapbox.featureLayer(dataNowSAC).setStyle(drawnPolygonOptionSAC).addTo(map);
-		 shownPolygonSAC.on("click", function(e) {
-			 clickPolygonSAC(e);
-		 });
+				$.ajax({
+					type: "GET",
+					url: urlPolySAC,
+					dataType: "jsonp",
+					jsonpCallback: "callbackSAC",
+					success: function(dataSAC) {
+						hoverPoly(dataSAC, 'sac');						
+					}
+				});	
+			}			
+		}
+		else {
+			
+			//console.log('remove sac');
+			
+			if (map.hasLayer(shownPolySAC)) {
+				map.removeLayer(shownPolySAC);
+			}
+			codeNowSAC = false;
+			$("#tooltip_box_div").hide();			
+		}
+	}
+	else if (type === 'sac') {	
+	
+		//console.log('hoverpoly sac');
+		
+		if (map.hasLayer(shownPolySAC)) {
+			map.removeLayer(shownPolySAC);
+		}
+		
+		dataNowSAC = data;		
+		
+		if (data.features.length > 0) {
+		
+			 var featureSAC_id = data.features[0].id.replace(/\..*$/, '');
+			 //console.log('featureSAC_id : '+ featureSAC_id);
+			 
+			 if (featureSAC_id == "ror_service_areas") {
+				//console.log('XXXXXXXXXX ror_service_areas');
+				return;
+			 }
+			 
+			 var sac = dataNowSAC.features[0].properties.sac;
+			//console.log('sac : ' + sac );			 
+			codeNowSAC = sac;
+			//console.log('codeNowSAC : ' + codeNowSAC );				 
 
-		 shownPolygonSAC.setZIndex(999);
-		 var text = "SAC:" + dataNowSAC.features[0].properties.sac + "<br> SA:" + dataNowSAC.features[0].properties.sa + "<br>SOURCE: " + dataNowSAC.features[0].properties.node0sourc;
+			 shownPolySAC = L.mapbox.featureLayer(dataNowSAC).setStyle(shownPolyOptionSAC).addTo(map);
+			 shownPolySAC.on("click", function(e) {
+				clickPoly(e);
+			});
+
+			 shownPolySAC.setZIndex(888);
+		}	
 	}
  }
 
-
-function displayPolygonSA(data) {
-     dataNowSA = data;
+ function clickPoly(e) { 
 	
-	var feature_id;
-	if (data.features.length > 0) {
-		
-		var feature_id = data.features[0].id.replace(/\..*$/, '');
-		 if (feature_id == "ror_service_areas_sac") {
-			return;
-		 }	 
-
-		 if (map.hasLayer(shownPolygonSA)) {
-			 map.removeLayer(shownPolygonSA);
-		 }
-
-		 if (dataNowSA.totalFeatures == 0) {
-			 $("#tooltip_box_div").hide();
-			 map.removeLayer(shownPolygonSA);
-			 return;
-		 }
-
-		 shownPolygonSA = L.mapbox.featureLayer(dataNowSA).setStyle(drawnPolygonOptionSA).addTo(map);
-		 shownPolygonSA.on("click", function(e) {
-			  clickPolygonSA(e);
-		  });
-
-		 shownPolygonSA.setZIndex(999);
-		 var text = "Study Area Code:" + dataNowSA.features[0].properties.sac + "<br> Service Area:" + dataNowSA.features[0].properties.sa + "<br>Source: " + dataNowSA.features[0].properties.node0sourc;
-
-		 $("#feature_display_div").html(text);
-		 $("#tooltip_box_div").show();
-	 }
- }
-
- function clickPolygonSA(e) { 
-
+	
+	//console.log('clickedPolyList : '+  clickedPolyList );
+	//console.log('clickedPolyList.length : '+  clickedPolyList.length );	
+	
+	//console.log('dataNowSA.totalFeatures : '+  dataNowSA.totalFeatures );
+	
      if (dataNowSA.totalFeatures == 0) {
-         $("#tooltip_box_div").hide();
-         return;
+         
+		 //clearClickedPoly();
+		 
+		 $("#tooltip_box_div").hide();
      }
+	 else {
 
-     dataCredential = {
-         "sac": dataNowSA.features[0].properties.sac,
-         "sa": dataNowSA.features[0].properties.sa,
-         "node0sourc": dataNowSA.features[0].properties.node0sourc
-     };
-	
-	/*
-     var index = $.inArray(dataCredential.sac, clickedSACList);
-     if (index < 0) {
-        clickedSACList.push(dataCredential.sac);
-        clickedSACData.push(dataNowSAC);
-     }
-     else {
-        clickedSACList.splice(index, 1);
-        clickedSACData.splice(index, 1);
-        //alert('deleted')
-        //alert('num sac data=' + clickedSACData.length)
-     }
-	 */
-	 
- 	clickedSACList.length = 0;
-	clickedSACData.length = 0;
-	
-	clickedSACList.push(dataCredential.sac);
-	clickedSACData.push(dataNowSAC);
+		var inPolyList = $.inArray(codeNowSAC, clickedPolyList);
 
-     //alert(clickedSACList);
+		//console.log('inPolyList : ' + inPolyList);
+		 
+		if (inPolyList < 0) {	
+			
+			//console.log('clickedPolyList.length : '+  clickedPolyList.length );	
+			
+			clearClickedPoly();
 
-     updateSACDownloadBox();
+			//console.log('clickedPolyList.length : '+  clickedPolyList.length );	
+			//console.log('clickedPolyData.length : '+  clickedPolyData.length );	
+		
+			var clickedPolyLayer = L.mapbox.featureLayer(dataNowSAC).setStyle(clickedPolyOption).addTo(map);
+			
+			clickedPolyLayer.on("click", function(e) {
+				clickPoly(e);
+			});			
+			
+			clickedPolyList.push(codeNowSAC);
+			clickedPolyData.push(clickedPolyLayer);		
+			
+		}
+		else {
+			
+			if (map.hasLayer(clickedPolyData[inPolyList])) {
+				map.removeLayer(clickedPolyData[inPolyList]);
+			}
+			
+			clickedPolyList.splice(inPolyList, 1);
+			clickedPolyData.splice(inPolyList, 1);
+		}
+	}	
 
-     var text = "[Selected Area] SAC: " + dataCredential.sac + " SA: " + dataCredential.sa + " SOURCE:" + dataCredential.node0sourc;
+	setDownloadSelect();
 
-    var tooltipText = "SAC:" + dataNow.features[0].properties.sac + "<br> SA:" + dataNow.features[0].properties.sa + "<br>SOURCE: " + dataNow.features[0].properties.node0sourc;
-
-     $("#feature_display_div").html(tooltipText);
-     $("#tooltip_box_div").show();
-
-     $("#area-display").html(text);
-     $("#warning-display").html("");
+	//console.log('clickedPolyList : '+  clickedPolyList );
 
  }
+ 
+ function clearClickedPoly() {
+	
+	//console.log('clearClickedPoly : ' );	
+	
+	for (var i = 0; i < clickedPolyData.length; i++){
+		
+		if (map.hasLayer(clickedPolyData[i])) {
+			map.removeLayer(clickedPolyData[i]);
+		}
+	}
+	clickedPolyList.length = 0;
+	clickedPolyData.length = 0;
+	
+	setDownloadSelect();
+ }
 
-function clickPolygonSAC(e) {
-
-	/*
-	var index = $.inArray(dataNowSAC.features[0].properties.sac, clickedSACList);
-  
-	 if (index < 0) {
-		clickedSACList.push(dataNowSAC.features[0].properties.sac);
-		clickedSACData.push(dataNowSAC);
-	 }
-	 else {
-		clickedSACList.splice(index, 1);
-		clickedSACData.splice(index, 1);
-	 }
-	 */
-	 
-	clickedSACList.length = 0;
-	clickedSACData.length = 0;
-	 
-	clickedSACList.push(dataNowSAC.features[0].properties.sac);
-	clickedSACData.push(dataNowSAC);
-
-	 updateSACDownloadBox();
-
-}
 
  function setListener() {
 
@@ -408,7 +416,7 @@ function clickPolygonSAC(e) {
 	 
 	 $("#input-sac-search").on("click", function(e) {
          e.preventDefault();
-         getSAC();
+         searchSAC();
      });
 
      $('#btn-geoLocation').click(function(event) {
@@ -455,31 +463,29 @@ function clickPolygonSAC(e) {
 
     $( "#input-sac" ).autocomplete({
         source: function( request, response ) {
+			var sac = request.term;
+			var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geo_swat:ror_sac&count=10&propertyName=sac&outputFormat=text/javascript&sortBy=sac&cql_filter=sac+like+'" + sac + "%25'&format_options=callback:callbackAutoComp";
 
-        var sac = request.term
+			$.ajax({
+				type: "GET",
+				url: url,
+				dataType: "jsonp",
+				jsonpCallback: "callbackAutoComp",
+				success: function( data ) {
+					var features = data.features;
+					sac_list = [];
+					for (var i = 0; i < features.length; i++) {
+						sac_list.push(features[i].properties.sac);
+					}
 
-        var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas_sac_new&count=10&propertyName=sac&outputFormat=text/javascript&sortBy=sac&cql_filter=sac+like+'" + sac + "%25'";
-
-        $.ajax({
-        type: "GET",
-        url: url,
-        dataType: "jsonp",
-        jsonpCallback: "parseResponse",
-        success: function( data ) {
-            var features = data.features;
-            sac_list = [];
-            for (var i = 0; i < features.length; i++) {
-                sac_list.push(features[i].properties.sac);
-            }
-
-        response( sac_list );
-        }
-        });
+					response( sac_list );
+				}
+			});
         },
         minLength: 2,
         select: function( event, ui ) {
-            setTimeout(function() {getSAC();}, 200);
-			getSAC();
+            setTimeout(function() {searchSAC();}, 200);
+			//searchSAC();
         },
         open: function() {
 			$( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
@@ -513,30 +519,59 @@ function clickPolygonSAC(e) {
         }
     });
  }
+ 
+function searchedPoly(data){
 
-function getSAC() {
+	clearClickedPoly();
+
+	//console.log('clickedPolyList.length : '+  clickedPolyList.length );	
+	//console.log('clickedPolyData.length : '+  clickedPolyData.length );	
+	
+	var sac = data.features[0].properties.sac;	
+	codeNowSAC = sac;
+	
+	//console.log('sac : ' +  sac );
+	//console.log('codeNowSAC : ' +  codeNowSAC );
+	
+	var searchedPolyLayer = L.mapbox.featureLayer(data).setStyle(clickedPolyOption).addTo(map);
+	
+	searchedPolyLayer.on("click", function(e) {
+		clickPoly(e);
+	});		
+
+	map.fitBounds(searchedPolyLayer.getBounds());		
+	
+	clickedPolyList.push(codeNowSAC);
+	clickedPolyData.push(searchedPolyLayer);		
+	
+	setDownloadSelect();
+
+}
+
+function searchSAC() {
 
 	var sac = $("#input-sac").val();
-	var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas_sac_new&count=1&outputFormat=text/javascript&cql_filter=sac='" + sac + "'";
-
+	//var urlSearch = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geo_swat:ror_sac&count=1&outputFormat=text/javascript&cql_filter=sac='" + sac + "'&format_options=callback:callbackSearch";
+	var urlSearch = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sac&maxFeatures=1&outputFormat=text/javascript&cql_filter=sac="+ sac +"&format_options=callback:callbackSearch";
+		
 	//alert(url)
 	$.ajax({
 		type: "GET",
-		url: url,
+		url: urlSearch,
 		dataType: "jsonp",
-		jsonpCallback: "parseResponse",
+		jsonpCallback: "callbackSearch",
 		success: function( data ) {
-		//alert(data.totalFeatures)
-			var feature = data.features[0];
-			var bbox = feature.properties.bbox;
+
+			/*
+			var bbox = data.bbox;
 			var southWest = L.latLng(bbox[0], bbox[1]),
 			northEast = L.latLng(bbox[2], bbox[3]),
-			bounds = L.latLngBounds(southWest, northEast);
-			//alert(bounds)
-			//clickedPolygon1 = L.mapbox.featureLayer(feature).setStyle(clickedPolygonOption).addTo(map);
-			//alert(clickedPolygon1)
-			//clickedPolygon1.setZIndex(999);
+			bounds = L.latLngBounds(southWest, northEast);			
 			map.fitBounds(bounds);
+			*/
+			
+			searchedPoly(data);				
+			
 		}
 	});
 
@@ -594,104 +629,192 @@ function getSAC() {
         $('.btn-legend').show();
     });
 
-    $('.links-downloadAll').on('click', 'a', function(e) {
-        //downloadAllData(e);
-        downloadSAC(e);
+    $('.links-download').on('click', 'a', function(e) {
+        downloadFile(e);
     }).on('click', '.btn', function(e) {
         $('#download-menu-box').hide();
     });
 
     $('#download-btn-small').on('click', function(){
-        setWhatToDownload();
+        setDownloadSelect();
         $("#download-menu-box").show('fast');
     });
-
 });
 
-function updateSACDownloadBox() {
 
-    for (var i = 0; i < clickedPolygonList.length; i++) {
-        if (map.hasLayer(clickedPolygonList[i])) {
-            map.removeLayer(clickedPolygonList[i]);
-        }
-    }
+function downloadFile(e) {
 
-    setWhatToDownload();
-
-    clickedPolygonList = [];
-    for (var i = 0; i < clickedSACData.length; i++) {
-	
-        var poly = L.mapbox.featureLayer(clickedSACData[i]).setStyle(clickedPolygonOption).addTo(map);
-		
-        clickedPolygonList.push(poly);
-        clickedPolygonList[clickedPolygonList.length-1].on("click", function(e) {
-
-			var index = $.inArray(dataCredential.sac, clickedSACList);
-			if (index < 0) {
-				clickedSACList.push(dataCredential.sac);
-				clickedSACData.push(dataNowSAC);
-			}
-			else {
-				clickedSACList.splice(index, 1);
-				clickedSACData.splice(index, 1);
-			}
-
-			updateSACDownloadBox();
-
-		});
-	}
-}
-
-function downloadSAC(e) {
     var dataType = e.target.id;
+	
+	var outputFormat, fileFormat;
     if (dataType == "shapefile") {
-            format = "shape-zip";
-        }
-        if (dataType == "geojson") {
-            format = "application/json";
-        }
-        if (dataType == "kml") {
-            format = "kml";
-        }
-        if (dataType == "csv") {
-            format = "csv"
-        }
+		outputFormat = "shape-zip";
+		fileFormat = "zip";
+	}
+	else if (dataType == "geojson") {
+		outputFormat = "application/json";
+		fileFormat = "json";
+	}
+	else if (dataType == "kml") {
+		outputFormat = "kml";
+		fileFormat = "kml";
+	}
+	else if (dataType == "csv") {
+		outputFormat = "csv";
+		fileFormat = "csv";
+	}
+	
+	//console.log('outputFormat : ' + outputFormat);
+	//console.log('fileFormat : ' + fileFormat);
+	
+	//window.alert('outputFormat : ' + outputFormat);
+	//window.alert('fileFormat : ' + fileFormat);
 
-    var what = $('input[name=radio-areas]:checked').val();
-
-    if (what == "all") {
-        var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas_new&maxFeatures=10000&outputFormat=" + format;
-        var window1 = window.open(url, "window1", config = "toolbar=0");
-        var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_central_offices_new&maxFeatures=10000&outputFormat=" + format;
-        var window2 = window.open(url, "window2", config = "toolbar=0");
+    var selected = $('input[name=radio-areas]:checked').val();
+	
+	//console.log('selected : ' + selected);
+	//window.alert('selected : ' + selected);
+	
+	var selVal = '';
+	
+	var urlPoly, urlPoint 
+	
+    if (selected == "all") {
+	
+		selVal = 'all';
+		
+		urlPoly = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sa&maxFeatures=10000&outputFormat=" + outputFormat;		
+		urlPoint = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_co&maxFeatures=10000&outputFormat=" + outputFormat;
     }
-
-    if (what == "selected") {
+	else if (selected == "selected") {
         var sac_tuple = "(";
-        for (var i = 0; i < clickedSACList.length; i++){
-            sac_tuple += "'" + clickedSACList[i] + "',";
+        for (var i = 0; i < clickedPolyList.length; i++){
+            sac_tuple += "'" + clickedPolyList[i] + "',";
+			
+			if ((clickedPolyList[i] != '') && (clickedPolyList[i] != 'undefined')) {			
+				if (selVal.length > 0) {
+					selVal += '-';
+				}
+				selVal += clickedPolyList[i];
+			}
         }
 
         sac_tuple = sac_tuple.replace(/,$/, "");
-        sac_tuple += ")";
+        sac_tuple += ")";	
 
-        var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_service_areas_new&maxFeatures=10000&outputFormat=" + format + "&cql_filter=sac+IN+" + sac_tuple;
-        var window1 = window.open(url, "window1", config = "toolbar=0");
-        var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_central_offices_new&maxFeatures=10000&outputFormat=" + format + "&cql_filter=sac+IN+" + sac_tuple;
-        var window2 = window.open(url, "window2", config = "toolbar=0");
+        urlPoly = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sa&maxFeatures=10000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
+        urlPoint = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_co&maxFeatures=10000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
 
-    }
+    }	
+	
+	//console.log('selVal : ' + selVal);	
+	//window.alert('selVal : ' + selVal);		
+	
+	//var urlPoly = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sa&maxFeatures=10000&outputFormat=" + outputFormat;		
+	//var urlPoint = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_co&maxFeatures=10000&outputFormat=" + outputFormat;
+	
+	//console.log('JSZip');
+	//window.alert('JSZip');
+	
+	var zip = new JSZip();
+	
+	var statusPoly = false;
+	var statusPoint = false;
+	
+	JSZipUtils.getBinaryContent(urlPoly, function (err, data) {
+	
+		//console.log('ror-map-poly');
+		//window.alert('ror-map-poly');
+		
+	   if(err) {
+		  //console.log('err poly : ' + err);
+		  //window.alert('err poly : ' + err);
+	   }   		   
+	   zip.file("ror-map-"+ selVal +"-poly."+ fileFormat, data, {binary:true});
+	   
+		statusPoly = true;		   
+		if (statusPoly && statusPoint) { 
+			downloadZip();
+		}
+	   
+	});
+	
+	JSZipUtils.getBinaryContent(urlPoint, function (err, data) {
+	   
+	   //console.log('ror-map-point');
+	   //window.alert('ror-map-point');
+	   
+	   if(err) {
+		  //console.log('err point : ' + err);
+		  //window.alert('err point : ' + err);
+	   }   		   
+	   zip.file("ror-map-"+ selVal +"-point." + fileFormat, data, {binary:true});
+	   
+		statusPoint = true;
+		if (statusPoly && statusPoint) { 
+			downloadZip();
+		}	   
+	});
+	
+	function downloadZip() {
+		if (JSZip.support.blob) {
+			
+			//console.log('ror-map-zip');
+			//window.alert('ror-map-zip');
+			
+			try {
+				var blob = zip.generate({type:"blob"});
+				
+				// see FileSaver.js
+				saveAs(blob, "ror-map-"+ selVal +"-"+ dataType +".zip");
+			} 
+			catch(e) {
+				//console.log('err all : ' + e);
+				//window.alert('err all : ' + e);
+			}
+			return false;
+				
+		} 
+		else {
+			//console.log('not supported on this browser ' );
+			//window.alert('JSZip.support.blob not supported on this browser ' );
+			
+			try {
+				
+				//console.log('window popups');
+				//window.alert('window popups');
+				
+				var windowPoly = window.open(urlPoly, "urlPoly", config = "toolbar=0");
+				var windowPoint = window.open(urlPoint, "urlPoint", config = "toolbar=0");
+			
+			} 
+			catch(e) {
+				//console.log('err all : ' + e);
+				//window.alert('err window : ' + e);
+			}			
+			
+		}
+	}	
+	
 }
 
-function setWhatToDownload() {
-    if (clickedSACData.length == 0) {
+function setDownloadSelect() {
+    if (clickedPolyData.length == 0) {
         $('#all-areas').prop('checked',true);
         $('#selected-areas').prop('checked', false);
+		
+		$("#selected-areas-poly-id").html('');
     }
     else {
         $('#all-areas').prop('checked',false);
-        $('#selected-areas').prop('checked', true);
+        $('#selected-areas').prop('checked', true);		
+		
+		clickedPolyListText = ''+ clickedPolyList;
+		if (clickedPolyListText.length > 17) {
+			clickedPolyListText = clickedPolyListText.substring(0,17) + '...';
+		}		
+		$("#selected-areas-poly-id").html('('+ clickedPolyListText +')');	
+		
     }
 }
-
 

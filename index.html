@@ -53,9 +53,10 @@
                             <span class="sr-only">Download Data"</span>
                         </button>
                         <div id="download-menu-box" class="download-menu" style="width: 300px">
-                            <div class="links-downloadAll">
-                                <input type="radio" name="radio-areas" id="all-areas" value="all" checked>All
-                                <input type="radio" name="radio-areas" id="selected-areas" value="selected"> Selected
+                            <div class="links-download">
+                                <input type="radio" name="radio-areas" id="all-areas" value="all" checked><label for="all-areas">All</label>
+								&nbsp;&nbsp;&nbsp;
+                                <input type="radio" name="radio-areas" id="selected-areas" value="selected"><label for="selected-areas">Selected <span style="font-weight: normal;" id="selected-areas-poly-id"></span></label>
                                 <button class="btn btn-xs pull-right" type="button">
                                     <span class="glyphicon glyphicon-remove"></span>
                                 </button>
@@ -117,6 +118,9 @@
 	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 
 	<script src="js/vendor/bootstrap.min.js"></script>	
+	<script src="js/vendor/jszip.min.js"></script>
+	<script src="js/vendor/jszip-utils.js"></script>
+	<script src="js/vendor/FileSaver.js"></script>
 	
 	<script src="//api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.js"></script>
     <script src="//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-pip/v0.0.2/leaflet-pip.js"></script>
