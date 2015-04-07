@@ -494,21 +494,22 @@ function hoverPoly(data, type) {
 			$( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
         }
 	});
+	
+	$("#input-search-switch").on('click', 'a', function(e) {
+		var search = $(e.currentTarget).data('value');
 
-    $("#input-search-switch").change(function(e) {
-        e.preventDefault();	
+		e.preventDefault();	
 
-        $("#input-sac").val('');
+		$("#input-sac").val('');
         $("#input-location").val('');
 		
-		var search = $( "#input-search-switch" ).val();		
-		
-        if (search == 'loc') {
+		if (search == 'loc') {
 			$("#input-sac").css('display', 'none');
 			$("#span-sac-search").css('display', 'none');
 			
 			$("#input-location").css('display', 'block');
 			$("#span-location-search").css('display', 'table-cell');
+			$("#btn-label").text('Location');
         }
         else {
             $("#input-sac").css('display', 'block');
@@ -516,8 +517,19 @@ function hoverPoly(data, type) {
 			
             $("#input-location").css('display', 'none');
             $("#span-location-search").css('display', 'none');
+            $("#btn-label").text('SAC');
         }
-    });
+	});
+
+	$('#input-location').keypress(function (e) {
+	 var key = e.which;
+	 if(key == 13)  // the enter key code
+	  {
+	    $('#input-loc-search').click();
+	    return false;  
+	  }
+	});   
+    
  }
  
 function searchedPoly(data){
