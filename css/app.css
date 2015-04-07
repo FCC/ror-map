@@ -1,14 +1,29 @@
+/*
+    __________________   __  ___                
+   / ____/ ____/ ____/  /  |/  /___ _____  _____
+  / /_  / /   / /      / /|_/ / __ `/ __ \/ ___/
+ / __/ / /___/ /___   / /  / / /_/ / /_/ (__  ) 
+/_/    \____/\____/  /_/  /_/\__,_/ .___/____/  
+                                 /_/            
+*/
 
 /* =============================================================================
-   Global Styles
+   Global
    ========================================================================== */
 
-body { color: #333; font-family: Arial, Helvetica, sans-serif; }
+@media (min-width: 1200px) {
+  .container { max-width: 900px; }
+}
+@media (min-width: 900px) {
+  .container { max-width: 900px; }
+}   
+.container { max-width: 900px; }
+      
+body { color: #333; font-family: Arial, Helvetica, sans-serif;}
 main { margin-top: 20px; }
-h1 { font-size: 22px; margin: 0 0 15px ; }
-h2 { font-size: 20px; }
-a, a:hover, a:focus { text-decoration: none; }
-    
+h1 {  }
+h2 {  }
+a, a:hover, a:focus { text-decoration: none; }    
     
 /* =============================================================================
    Header
@@ -16,6 +31,14 @@ a, a:hover, a:focus { text-decoration: none; }
 header { background-color: #373b41; margin-bottom: 10px; }
 header a { margin-top: 15px; }
 .logo { float: left; margin: 15px 10px; }
+
+.map-title {font-size: 22px; margin: 8px 0 8px; font-weight: normal; }
+.map-subtitle {font-size: 18px; margin: 4px 0 4px; font-weight: normal; font-style: none; }
+
+.map-about {font-size: 20px;}
+.map-date {float: right; font-size: 12px; font-style: italic;}
+
+
 /* =============================================================================
    Footer
    ========================================================================== */
@@ -29,6 +52,8 @@ footer .bull { font-size: 16px; margin: 0 10px; }
    Search
    ========================================================================== */
 
+#search-field { margin-top: 15px; margin-bottom: 10px; }
+   
 .ui-autocomplete { z-index:9999999 !important;}  
 
 .search-bar, .search-btns { display: inline; }
@@ -88,7 +113,7 @@ footer .bull { font-size: 16px; margin: 0 10px; }
 .icon-search:before { content: "\e600"; }
 .icon-locate-1:before { content: "\e602"; }
 .icon-nation-1:before { content: url('../img/globe.png'); }
-.icon-download:before { content: "\e603"; }
+.icon-download:before { content: "\e603"; top: 5px;}
 .icon-upload:before { content: "\e604"; }
 .icon-latency:before { content: "\e605"; }
 .icon-packet:before { content: "\e606"; }
@@ -105,3 +130,5 @@ footer .bull { font-size: 16px; margin: 0 10px; }
 .icon-map-layers-2:before { content: "\e60f"; position: relative; top: 2px; }
 .glyphicon-ok { color: #85c12e; margin-left: -20px; margin-right: 5px; }
 .icon-hexagon-fill { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); }
+
+.glyphicon-download {top: 3px;}

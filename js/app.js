@@ -1,3 +1,12 @@
+/*
+    __________________   __  ___                
+   / ____/ ____/ ____/  /  |/  /___ _____  _____
+  / /_  / /   / /      / /|_/ / __ `/ __ \/ ___/
+ / __/ / /___/ /___   / /  / / /_/ / /_/ (__  ) 
+/_/    \____/\____/  /_/  /_/\__,_/ .___/____/  
+                                 /_/            
+*/
+
 var map;
 var shownPolySAC;
 var shownPolySA;
@@ -44,18 +53,14 @@ var yNow;
      'fillOpacity': 0.25
  }
 
- var southWest = L.latLng(10.948876, -176.592862),
-     northEast = L.latLng(71.271461, -61.765169),
-     bounds_us = L.latLngBounds(southWest, northEast);
-
  function createMap() {
  
      L.mapbox.accessToken = 'pk.eyJ1IjoiY29tcHV0ZWNoIiwiYSI6InMyblMya3cifQ.P8yppesHki5qMyxTc2CNLg';
-     map = L.mapbox.map('map', 'nbm.i2op87g0', {
+     map = L.mapbox.map('map', 'fcc.k74ed5ge', {
              attributionControl: true,
              maxZoom: 19
          })
-         .fitBounds(bounds_us);
+         .setView([40, -97], 3);
 
      map.attributionControl.addAttribution('<a href="http://fcc.gov/maps">FCC Maps</a>');
 
@@ -109,8 +114,7 @@ var yNow;
 	 
 	map.on("click", function(e) {
 		clickPoly(e);
-	}); 
-	 
+	}); 	 
 	 
 	var gx = 0;
 	var gy = 0;
@@ -120,14 +124,7 @@ var yNow;
 	 map.on("mousemove", function(e){		
 		
 		nx = Math.floor(e.containerPoint.x/gsize);
-		ny = Math.floor(e.containerPoint.y/gsize);
-		
-		/*
-		document.getElementById('mapinfo').innerHTML = "<br> gx: " + gx +
-		"<br> gy: " + gy +
-		"<br> nx: " + nx +
-		"<br> ny: " + ny;
-		*/
+		ny = Math.floor(e.containerPoint.y/gsize);		
 		
 		if ((nx == gx) && (ny == gy) ){	
 			// same grid
@@ -442,7 +439,8 @@ function hoverPoly(data, type) {
      });
 
      $("#btn-nationLocation").on("click", function() {
-         map.fitBounds(bounds_us);
+         //map.fitBounds(bounds_us);
+		 map.setView([40, -97], 3);
      });
 
      $("#map").on("mousemove", function(e) {
