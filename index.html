@@ -20,41 +20,33 @@
             <div class="col-md-12">
                 <h1>Rate of Return Map</h1>
                 <div id="search-field" class="input-group" style="margin-bottom: 10px;">
-                    <div class="search-input input-group">
-                        <div class="input-group-btn">
-                            <button aria-expanded="false" data-toggle="dropdown" class="btn btn-default dropdown-toggle" type="button"><span id="btn-label">SAC</span> <span class="caret"></span></button>
-                            <ul id="input-search-switch" role="menu" class="dropdown-menu">
-                                <li><a href="#" data-value="loc">Location</a></li>
-                                <li><a href="#" data-value="sac">SAC</a></li>
-                            </ul>
+                    <div class="search-group">
+                        <div class="search-input">
+                            <div class="input-group">
+                                <div class="input-group-btn">
+                                    <button aria-expanded="false" data-toggle="dropdown" class="btn btn-default dropdown-toggle" type="button"><span id="btn-label">SAC</span> <span class="caret"></span></button>
+                                    <ul id="input-search-switch" role="menu" class="dropdown-menu">
+                                        <li><a href="#" data-value="loc">Location</a></li>
+                                        <li><a href="#" data-value="sac">SAC</a></li>
+                                    </ul>
+                                </div>
+                                <input id="input-location" class="form-control" type="search" placeholder="Enter Location" style="display: none">
+                                <input id="input-sac" class="form-control" type="search" placeholder="Enter SAC" style="display: block">
+                                <span class="input-group-btn" id="span-location-search" style="display: none">                        
+                                                                    <button class="btn-search btn btn-default" type="submit" id="input-loc-search" title="Location Search" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-search"></span><span class="sr-only">Location Search</span></button>
+                                </span>
+                                <span class="input-group-btn" id="span-sac-search" style="display: table-cell">                        
+                                                                    <button class="btn-search btn btn-default" id="input-sac-search" title="SAC Search" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-search"></span><span class="sr-only">SAC Search</span></button>
+                                </span>
+                            </div>
                         </div>
-                        <input id="input-location" class="form-control" type="search" placeholder="Enter Location" style="display: none">
-                        <input id="input-sac" class="form-control" type="search" placeholder="Enter SAC" style="display: block">
-                        <span class="input-group-btn" id="span-location-search" style="display: none">                        
-                            <button class="btn-search btn btn-default" type="submit" id="input-loc-search" title="Location Search" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-search"></span><span class="sr-only">Location Search</span></button>
-                        </span>
-                        <span class="input-group-btn" id="span-sac-search" style="display: table-cell">                        
-                            <button class="btn-search btn btn-default" id="input-sac-search" title="SAC Search" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-search"></span><span class="sr-only">SAC Search</span></button>
-                        </span>
+                        <div class="btn-group-loc">
+                            <span class="input-group-btn">  
+                                                                    <button class="btn-geoLocation btn btn-default st" title="Get Current Location" data-toggle="tooltip" data-placement="top" id="btn-geoLocation" type="button" data-original-title="Get Current Location"><span class="icon-locate-1"></span><span class="sr-only">Get Current Location</span></button>
+                            <button class="btn-nationLocation btn btn-default st" title="Nationwide" data-toggle="tooltip" data-placement="top" id="btn-nationLocation" type="button" data-original-title="Nationwide"><span class="icon-nation-1"></span><span class="sr-only">Nationwide</span></button>
+                            </span>
+                        </div>
                     </div>
-                    <!-- <span class="input-group-btn" id="span-location-search" style="display: none">                        
-                            <button class="btn-search btn btn-default" type="submit" id="input-loc-search" title="Location Search" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-search"></span><span class="sr-only">Location Search</span></button>
-                        </span>
-                        
-                        <span class="input-group-btn" id="span-sac-search" style="display: table-cell">                        
-                            <button class="btn-search btn btn-default" id="input-sac-search" title="SAC Search" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-search"></span><span class="sr-only">SAC Search</span></button>
-                        </span> -->
-                    <!-- <span class="" id="span-search-switch" style="">                        
-                            <button class="btn-search btn btn-default"  id="input-search-switch" title="Toggle SAC/Address" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-retweet"></span><span class="sr-only">Change</span></button>
-                    <select id="input-search-switch">
-                        <option value="sac">SAC</option>
-                        <option value="loc">Location</option>
-                    </select>
-                    </span> -->
-                    <span class="input-group-btn">  
-                            <button class="btn-geoLocation btn btn-default st" title="Get Current Location" data-toggle="tooltip" data-placement="top" id="btn-geoLocation" type="button" data-original-title="Get Current Location"><span class="icon-locate-1"></span><span class="sr-only">Get Current Location</span></button>
-                    <button class="btn-nationLocation btn btn-default st" title="Nationwide" data-toggle="tooltip" data-placement="top" id="btn-nationLocation" type="button" data-original-title="Nationwide"><span class="icon-nation-1"></span><span class="sr-only">Nationwide</span></button>
-                    </span>
                 </div>
                 <div class="map-container">
                     <div id="map">
