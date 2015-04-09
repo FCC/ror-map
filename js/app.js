@@ -121,7 +121,7 @@ var yNow;
 	var nx, ny;
 	var gsize = 16;
 	 
-	 map.on("mousemove", function(e){		
+	map.on("mousemove", function(e){		
 		
 		nx = Math.floor(e.containerPoint.x/gsize);
 		ny = Math.floor(e.containerPoint.y/gsize);		
@@ -135,8 +135,7 @@ var yNow;
 			gy = ny; 
 			
 			var lat = e.latlng.lat;
-			var lng = e.latlng.lng;
-		
+			var lng = e.latlng.lng;		
 
 			//SA
 			//var urlPolySA = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sa&maxFeatures=1&outputFormat=text/javascript&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
@@ -726,6 +725,10 @@ function downloadFile(e) {
 	//console.log('JSZip');
 	//window.alert('JSZip');
 	
+	
+	
+	
+	
 	var zip = new JSZip();
 	
 	var statusPoly = false;
@@ -766,17 +769,64 @@ function downloadFile(e) {
 		}	   
 	});
 	
+	/*
+	try {
+		var isFileSaverSupported = !!new Blob;
+		//console.log('isFileSaverSupported : ' + isFileSaverSupported );
+		
+	} catch (e) {
+		//console.log('err isFileSaverSupported : ' + e);
+	}
+	*/
+	
+	function checkDownloadFeat() {
+		
+		if (typeof navigator !== "undefined" && navigator.msSaveOrOpenBlob && navigator.msSaveOrOpenBlob.bind(navigator)) {
+			//console.log('msSaveOrOpenBlob true ' );
+			//console.log('checkDownloadFeat true');
+			return true;
+		}
+		else {
+		
+			var a = document.createElement('a');
+			if (typeof a.download != "undefined") {
+				//console.log('checkDownloadFeat true');
+				return true;
+			}
+			else {
+				//console.log('checkDownloadFeat false');
+				return false;
+			}
+		}
+	}
+	
 	function downloadZip() {
-		if (JSZip.support.blob) {
+		if ( (JSZip.support.blob) && (checkDownloadFeat()) ) {
 			
 			//console.log('ror-map-zip');
 			//window.alert('ror-map-zip');
 			
 			try {
-				var blob = zip.generate({type:"blob"});
 				
-				// see FileSaver.js
-				saveAs(blob, "ror-map-"+ selVal +"-"+ dataType +".zip");
+				var zipName = "ror-map-"+ selVal +"-"+ dataType +".zip";
+				var zipBlob = zip.generate({type:"blob"});
+				
+				saveAs(zipBlob, zipName);
+				
+
+				//var zipData = zip.generate();
+				//window.location.href="data:application/zip;base64," + zipData;
+				//window.location.href="data:application/octet-stream;base64," + zipData;
+				//window.open('data:application/zip;base64,' + encodeURI(zipData));
+				
+				
+				//$('#download-zip').href = "data:application/zip;base64," + encodeURI(zipData);
+				
+				//$('#download-zip').attr('href', 'data:application/zip;base64,' + encodeURI(zipData) );
+				
+				//console.log('download-zip href: ' + $('#download-zip').href);
+				//$('#download-zip').show();
+				
 			} 
 			catch(e) {
 				//console.log('err all : ' + e);
@@ -796,6 +846,8 @@ function downloadFile(e) {
 				
 				var windowPoly = window.open(urlPoly, "urlPoly", config = "toolbar=0");
 				var windowPoint = window.open(urlPoint, "urlPoint", config = "toolbar=0");
+				
+				$('#download-zip-popup').show();
 			
 			} 
 			catch(e) {
