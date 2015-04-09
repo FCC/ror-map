@@ -7,6 +7,16 @@
                                  /_/            
 */
 
+/*
+var geo_host = 'http://www.broadbandmap.gov';
+var geo_space = 'fcc';
+var geo_output = 'json'
+*/
+
+var geo_host = 'http://ldevtm-geo02:8080';
+var geo_space = 'geo_swat';
+var geo_output = 'application/json'
+
 var map;
 var shownPolySAC;
 var shownPolySA;
@@ -68,22 +78,22 @@ var yNow;
      baseSatellite = L.mapbox.tileLayer('fcc.k74d7n0g');
      baseTerrain = L.mapbox.tileLayer('fcc.k74cm3ol');
 
-     var wms_ror_service_areas = L.tileLayer.wms('http://www.broadbandmap.gov/geoserver/wms', {
+     var wms_ror_sa = L.tileLayer.wms(geo_host +'/geoserver/wms', {
          format: 'image/png',
          transparent: true,
-         layers: 'fcc:ror_sa'
+         layers: geo_space +':ror_sa'
      });
 
-     var wms_ror_service_areas_sac = L.tileLayer.wms('http://www.broadbandmap.gov/geoserver/wms', {
+     var wms_ror_sac = L.tileLayer.wms(geo_host +'/geoserver/wms', {
          format: 'image/png',
          transparent: true,
-         layers: 'fcc:ror_sac'
+         layers: geo_space +':ror_sac'
      });
      
-     var wms_ror_central_offices = L.tileLayer.wms('http://www.broadbandmap.gov/geoserver/wms', {
+     var wms_ror_co = L.tileLayer.wms(geo_host +'/geoserver/wms', {
          format: 'image/png',
          transparent: true,
-         layers: 'fcc:ror_co'
+         layers: geo_space +':ror_co'
      }); 
 
      L.control.scale({
@@ -97,20 +107,12 @@ var yNow;
          'Satellite': baseSatellite,
          'Terrain': baseTerrain
      }, {        		
-		'Service Areas': wms_ror_service_areas.addTo(map),
-		'Study Areas': wms_ror_service_areas_sac.addTo(map),
-		'Central Offices': wms_ror_central_offices.addTo(map)
+		'Service Areas': wms_ror_sa.addTo(map),
+		'Study Areas': wms_ror_sac.addTo(map),
+		'Central Offices': wms_ror_co.addTo(map)
      }, {
          position: 'topleft'
      }).addTo(map);
-
-     // var gridLayer = L.mapbox.gridLayer('fcc.7zcvriap', {'follow': true});
-     // map.addLayer(gridLayer);
-     // map.addControl(L.mapbox.gridControl(gridLayer));
-
-     //map.addControl(L.mapbox.geocoderControl('mapbox.places').setPosition('topleft'))
-
-     //wms_ror_service_areas.addTo(map);
 	 
 	map.on("click", function(e) {
 		clickPoly(e);
@@ -138,10 +140,8 @@ var yNow;
 			var lng = e.latlng.lng;		
 
 			//SA
-			//var urlPolySA = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sa&maxFeatures=1&outputFormat=text/javascript&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
-			//var urlPolySA = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sa&maxFeatures=1&outputFormat=text/javascript&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))&format_options=callback:callbackSA";
-			var urlPolySA = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sa&maxFeatures=1&outputFormat=json&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
-			//var urlPolySA = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sa&maxFeatures=1&outputFormat=application/json&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
+			//var urlPolySA = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sa&maxFeatures=1&outputFormat="+ geo_output +"&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))&format_options=callback:callbackSA";
+			var urlPolySA = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sa&maxFeatures=1&outputFormat="+ geo_output +"&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
 
 			isInsidePoly = false;
 			if (map.hasLayer(shownPolySA)) {
@@ -152,9 +152,7 @@ var yNow;
 			}
 
 			if ((!isInsidePoly) || (codeNowSAC != codeNowSA)) {			
-				
-				//console.log('ajax urlPolySA');
-				
+			
 				$.ajax({
 					type: "GET",
 					url: urlPolySA,
@@ -230,9 +228,9 @@ function hoverPoly(data, type) {
 			var featureSA_id = data.features[0].id.replace(/\..*$/, '');
 			//console.log('featureSA_id sa : '+ featureSA_id);
 			
-			if (featureSA_id == "ror_service_areas_sac") {
+			if (featureSA_id == "ror_sac") {
 				
-				//console.log('XXXXXXXXXX ror_service_areas_sac');				
+				//console.log(' ror_sac');				
 				return;
 			}
 
@@ -263,18 +261,12 @@ function hoverPoly(data, type) {
 			
 			// get sac layer
 			
-			codeNowSA = sac;
-			
-			//console.log('before codeNowSA  :' + codeNowSA);
-			//console.log('before codeNowSAC :' + codeNowSAC);
-			if (codeNowSAC != codeNowSA) {				
-				
-				//console.log('ajax urlPolySAC');
-				
-				//var urlPolySAC = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sac&maxFeatures=1&outputFormat=text/javascript&cql_filter=sac="+ sac;
-				//var urlPolySAC = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sac&maxFeatures=1&outputFormat=text/javascript&cql_filter=sac="+ sac +"&format_options=callback:callbackSAC";
-				var urlPolySAC = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sac&maxFeatures=10&outputFormat=json&cql_filter=sac="+ sac +"";
-				//var urlPolySAC = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sac&maxFeatures=1&outputFormat=application/json&cql_filter=sac="+sac;
+			codeNowSA = sac;			
+
+			if (codeNowSAC != codeNowSA) {	
+
+				//var urlPolySAC = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sac&maxFeatures=1&outputFormat="+ geo_output +"&cql_filter=sac="+ sac +"&format_options=callback:callbackSAC";
+				var urlPolySAC = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sac&maxFeatures=10&outputFormat="+ geo_output +"&cql_filter=sac="+ sac +"";
 
 				$.ajax({
 					type: "GET",
@@ -314,8 +306,8 @@ function hoverPoly(data, type) {
 			 var featureSAC_id = data.features[0].id.replace(/\..*$/, '');
 			 //console.log('featureSAC_id : '+ featureSAC_id);
 			 
-			 if (featureSAC_id == "ror_service_areas") {
-				//console.log('XXXXXXXXXX ror_service_areas');
+			 if (featureSAC_id == "ror_sa") {
+				//console.log(' ror_sa');
 				return;
 			 }
 			 
@@ -465,8 +457,8 @@ function hoverPoly(data, type) {
     $( "#input-sac" ).autocomplete({
         source: function( request, response ) {
 			var sac = request.term;
-			//var urlAutoComp = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=fcc:ror_sac&count=10&propertyName=sac&outputFormat=text/javascript&sortBy=sac&cql_filter=sac+like+'" + sac + "%25'&format_options=callback:callbackAutoComp";
-			var urlAutoComp = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=fcc:ror_sac&count=10&propertyName=sac&outputFormat=json&sortBy=sac&cql_filter=sac+like+'" + sac + "%25'";
+			//var urlAutoComp = geo_host +"/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName="+ geo_space +":ror_sac&count=10&propertyName=sac&outputFormat="+ geo_output +"&sortBy=sac&cql_filter=sac+like+'" + sac + "%25'&format_options=callback:callbackAutoComp";
+			var urlAutoComp = geo_host +"/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName="+ geo_space +":ror_sac&count=10&propertyName=sac&outputFormat="+ geo_output +"&sortBy=sac&cql_filter=sac+like+'" + sac + "%25'";
 
 			$.ajax({
 				type: "GET",
@@ -563,8 +555,8 @@ function searchedPoly(data){
 function searchSAC() {
 
 	var sac = $("#input-sac").val();
-	//var urlSearch = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sac&maxFeatures=1&outputFormat=text/javascript&cql_filter=sac="+ sac +"&format_options=callback:callbackSearch";
-	var urlSearch = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sac&maxFeatures=1&outputFormat=json&cql_filter=sac="+ sac +"";
+	//var urlSearch = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sac&maxFeatures=1&outputFormat="+ geo_output +"&cql_filter=sac="+ sac +"&format_options=callback:callbackSearch";
+	var urlSearch = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sac&maxFeatures=1&outputFormat="+ geo_output +"&cql_filter=sac="+ sac +"";
 	
 	$.ajax({
 		type: "GET",
@@ -640,6 +632,28 @@ function searchSAC() {
     });
 });
 
+function checkDownloadFeat() {
+		
+	if (typeof navigator !== "undefined" && navigator.msSaveOrOpenBlob && navigator.msSaveOrOpenBlob.bind(navigator)) {
+		//console.log('msSaveOrOpenBlob true ' );
+		//console.log('checkDownloadFeat true');
+		return true;
+	}
+	else {
+	
+		var a = document.createElement('a');
+		if (typeof a.download != "undefined") {
+			//console.log('checkDownloadFeat true');
+			return true;
+		}
+		else {
+			//console.log('checkDownloadFeat false');
+			return false;
+		}
+	}
+}
+var checkDownload = checkDownloadFeat();
+
 function downloadFile(e) {
 
     var dataType = e.target.id;
@@ -670,8 +684,8 @@ function downloadFile(e) {
 	
 		selVal = 'all';
 		
-		urlPoly = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sa&maxFeatures=10000&outputFormat=" + outputFormat;		
-		urlPoint = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_co&maxFeatures=10000&outputFormat=" + outputFormat;
+		urlPoly = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sa&maxFeatures=10000&outputFormat=" + outputFormat;		
+		urlPoint = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_co&maxFeatures=10000&outputFormat=" + outputFormat;
     }
 	else if (selected == "selected") {
         var sac_tuple = "(";
@@ -689,8 +703,8 @@ function downloadFile(e) {
         sac_tuple = sac_tuple.replace(/,$/, "");
         sac_tuple += ")";	
 
-        urlPoly = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sa&maxFeatures=10000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
-        urlPoint = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_co&maxFeatures=10000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
+        urlPoly = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sa&maxFeatures=10000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
+        urlPoint = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_co&maxFeatures=10000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
     }	
 	
 	var zip = new JSZip();
@@ -737,31 +751,10 @@ function downloadFile(e) {
 	} catch (e) {
 		//console.log('err isFileSaverSupported : ' + e);
 	}
-	*/
-	
-	function checkDownloadFeat() {
-		
-		if (typeof navigator !== "undefined" && navigator.msSaveOrOpenBlob && navigator.msSaveOrOpenBlob.bind(navigator)) {
-			//console.log('msSaveOrOpenBlob true ' );
-			//console.log('checkDownloadFeat true');
-			return true;
-		}
-		else {
-		
-			var a = document.createElement('a');
-			if (typeof a.download != "undefined") {
-				//console.log('checkDownloadFeat true');
-				return true;
-			}
-			else {
-				//console.log('checkDownloadFeat false');
-				return false;
-			}
-		}
-	}
+	*/	
 	
 	function downloadZip() {
-		if ( (JSZip.support.blob) && (checkDownloadFeat()) ) {			
+		if ( (JSZip.support.blob) && (checkDownload) ) {			
 			//console.log('ror-map-zip');			
 			try {
 				
