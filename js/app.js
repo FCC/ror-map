@@ -664,16 +664,21 @@ function downloadFile(e) {
 		fileFormat = "zip";
 	}
 	else if (dataType == "geojson") {
-		outputFormat = "application/json";
+		//outputFormat = "application/json";
+		outputFormat = "json";
 		fileFormat = "json";
+	}	
+	else if (dataType == "csv") {
+		outputFormat = "csv";
+		fileFormat = "csv";
+	}
+	else if (dataType == "gml") {
+		outputFormat = "gml2";
+		fileFormat = "gml";
 	}
 	else if (dataType == "kml") {
 		outputFormat = "kml";
 		fileFormat = "kml";
-	}
-	else if (dataType == "csv") {
-		outputFormat = "csv";
-		fileFormat = "csv";
 	}
 
     var selected = $('input[name=radio-areas]:checked').val();		
@@ -684,8 +689,8 @@ function downloadFile(e) {
 	
 		selVal = 'all';
 		
-		urlPoly = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sa&maxFeatures=10000&outputFormat=" + outputFormat;		
-		urlPoint = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_co&maxFeatures=10000&outputFormat=" + outputFormat;
+		urlPoly = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sa&maxFeatures=100000&outputFormat=" + outputFormat;		
+		urlPoint = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_co&maxFeatures=100000&outputFormat=" + outputFormat;
     }
 	else if (selected == "selected") {
         var sac_tuple = "(";
@@ -703,8 +708,8 @@ function downloadFile(e) {
         sac_tuple = sac_tuple.replace(/,$/, "");
         sac_tuple += ")";	
 
-        urlPoly = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sa&maxFeatures=10000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
-        urlPoint = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_co&maxFeatures=10000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
+        urlPoly = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sa&maxFeatures=100000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
+        urlPoint = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_co&maxFeatures=100000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
     }	
 	
 	var zip = new JSZip();
