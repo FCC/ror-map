@@ -534,12 +534,10 @@ function searchedPoly(data){
 	clearClickedPoly();
 
 	//console.log('clickedPolyList.length : '+  clickedPolyList.length );	
-	//console.log('clickedPolyData.length : '+  clickedPolyData.length );	
 	
 	var sac = data.features[0].properties.sac;	
 	codeNowSAC = sac;
 	
-	//console.log('sac : ' +  sac );
 	//console.log('codeNowSAC : ' +  codeNowSAC );
 	
 	var searchedPolyLayer = L.mapbox.featureLayer(data).setStyle(clickedPolyOption).addTo(map);
@@ -554,16 +552,13 @@ function searchedPoly(data){
 	clickedPolyData.push(searchedPolyLayer);		
 	
 	setDownloadSelect();
-
 }
 
 function searchSAC() {
 
 	var sac = $("#input-sac").val();
-	//var urlSearch = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geo_swat:ror_sac&count=1&outputFormat=text/javascript&cql_filter=sac='" + sac + "'&format_options=callback:callbackSearch";
 	var urlSearch = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sac&maxFeatures=1&outputFormat=text/javascript&cql_filter=sac="+ sac +"&format_options=callback:callbackSearch";
-		
-	//alert(url)
+	
 	$.ajax({
 		type: "GET",
 		url: urlSearch,
@@ -579,22 +574,18 @@ function searchSAC() {
 			map.fitBounds(bounds);
 			*/
 			
-			searchedPoly(data);				
-			
+			searchedPoly(data);			
 		}
 	});
-
 }
  
  function locChange() {
 
      var loc = $("#input-location").val();
-
      geocoder.query(loc, codeMap);
  }
 
  function codeMap(err, data) {
-     //alert(JSON.stringify(data));
 
      var lat = data.latlng[0];
      var lon = data.latlng[1];
@@ -650,7 +641,6 @@ function searchSAC() {
     });
 });
 
-
 function downloadFile(e) {
 
     var dataType = e.target.id;
@@ -672,20 +662,9 @@ function downloadFile(e) {
 		outputFormat = "csv";
 		fileFormat = "csv";
 	}
-	
-	//console.log('outputFormat : ' + outputFormat);
-	//console.log('fileFormat : ' + fileFormat);
-	
-	//window.alert('outputFormat : ' + outputFormat);
-	//window.alert('fileFormat : ' + fileFormat);
 
-    var selected = $('input[name=radio-areas]:checked').val();
-	
-	//console.log('selected : ' + selected);
-	//window.alert('selected : ' + selected);
-	
-	var selVal = '';
-	
+    var selected = $('input[name=radio-areas]:checked').val();		
+	var selVal = '';	
 	var urlPoly, urlPoint 
 	
     if (selected == "all") {
@@ -713,21 +692,7 @@ function downloadFile(e) {
 
         urlPoly = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sa&maxFeatures=10000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
         urlPoint = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_co&maxFeatures=10000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
-
     }	
-	
-	//console.log('selVal : ' + selVal);	
-	//window.alert('selVal : ' + selVal);		
-	
-	//var urlPoly = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sa&maxFeatures=10000&outputFormat=" + outputFormat;		
-	//var urlPoint = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_co&maxFeatures=10000&outputFormat=" + outputFormat;
-	
-	//console.log('JSZip');
-	//window.alert('JSZip');
-	
-	
-	
-	
 	
 	var zip = new JSZip();
 	
@@ -737,11 +702,9 @@ function downloadFile(e) {
 	JSZipUtils.getBinaryContent(urlPoly, function (err, data) {
 	
 		//console.log('ror-map-poly');
-		//window.alert('ror-map-poly');
 		
 	   if(err) {
 		  //console.log('err poly : ' + err);
-		  //window.alert('err poly : ' + err);
 	   }   		   
 	   zip.file("ror-map-"+ selVal +"-poly."+ fileFormat, data, {binary:true});
 	   
@@ -755,11 +718,9 @@ function downloadFile(e) {
 	JSZipUtils.getBinaryContent(urlPoint, function (err, data) {
 	   
 	   //console.log('ror-map-point');
-	   //window.alert('ror-map-point');
 	   
 	   if(err) {
 		  //console.log('err point : ' + err);
-		  //window.alert('err point : ' + err);
 	   }   		   
 	   zip.file("ror-map-"+ selVal +"-point." + fileFormat, data, {binary:true});
 	   
@@ -801,11 +762,8 @@ function downloadFile(e) {
 	}
 	
 	function downloadZip() {
-		if ( (JSZip.support.blob) && (checkDownloadFeat()) ) {
-			
-			//console.log('ror-map-zip');
-			//window.alert('ror-map-zip');
-			
+		if ( (JSZip.support.blob) && (checkDownloadFeat()) ) {			
+			//console.log('ror-map-zip');			
 			try {
 				
 				var zipName = "ror-map-"+ selVal +"-"+ dataType +".zip";
@@ -813,51 +771,27 @@ function downloadFile(e) {
 				
 				saveAs(zipBlob, zipName);
 				
-
-				//var zipData = zip.generate();
-				//window.location.href="data:application/zip;base64," + zipData;
-				//window.location.href="data:application/octet-stream;base64," + zipData;
-				//window.open('data:application/zip;base64,' + encodeURI(zipData));
-				
-				
-				//$('#download-zip').href = "data:application/zip;base64," + encodeURI(zipData);
-				
-				//$('#download-zip').attr('href', 'data:application/zip;base64,' + encodeURI(zipData) );
-				
-				//console.log('download-zip href: ' + $('#download-zip').href);
-				//$('#download-zip').show();
-				
 			} 
 			catch(e) {
 				//console.log('err all : ' + e);
-				//window.alert('err all : ' + e);
 			}
-			return false;
-				
+			return false;				
 		} 
 		else {
-			//console.log('not supported on this browser ' );
-			//window.alert('JSZip.support.blob not supported on this browser ' );
-			
-			try {
-				
+			//console.log('not supported on this browser ' );			
+			try {				
 				//console.log('window popups');
-				//window.alert('window popups');
 				
 				var windowPoly = window.open(urlPoly, "urlPoly", config = "toolbar=0");
 				var windowPoint = window.open(urlPoint, "urlPoint", config = "toolbar=0");
 				
-				$('#download-zip-popup').show();
-			
+				$('#download-zip-popup').show();			
 			} 
 			catch(e) {
 				//console.log('err all : ' + e);
-				//window.alert('err window : ' + e);
-			}			
-			
+			}
 		}
-	}	
-	
+	}
 }
 
 function setDownloadSelect() {
@@ -875,8 +809,6 @@ function setDownloadSelect() {
 		if (clickedPolyListText.length > 17) {
 			clickedPolyListText = clickedPolyListText.substring(0,17) + '...';
 		}		
-		$("#selected-areas-poly-id").html('('+ clickedPolyListText +')');	
-		
+		$("#selected-areas-poly-id").html('('+ clickedPolyListText +')');			
     }
 }
-
