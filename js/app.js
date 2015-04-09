@@ -68,22 +68,22 @@ var yNow;
      baseSatellite = L.mapbox.tileLayer('fcc.k74d7n0g');
      baseTerrain = L.mapbox.tileLayer('fcc.k74cm3ol');
 
-     var wms_ror_service_areas = L.tileLayer.wms('http://ldevtm-geo02:8080/geoserver/wms', {
+     var wms_ror_service_areas = L.tileLayer.wms('http://www.broadbandmap.gov/geoserver/wms', {
          format: 'image/png',
          transparent: true,
-         layers: 'geo_swat:ror_sa'
+         layers: 'fcc:ror_sa'
      });
 
-     var wms_ror_service_areas_sac = L.tileLayer.wms('http://ldevtm-geo02:8080/geoserver/wms', {
+     var wms_ror_service_areas_sac = L.tileLayer.wms('http://www.broadbandmap.gov/geoserver/wms', {
          format: 'image/png',
          transparent: true,
-         layers: 'geo_swat:ror_sac'
+         layers: 'fcc:ror_sac'
      });
      
-     var wms_ror_central_offices = L.tileLayer.wms('http://ldevtm-geo02:8080/geoserver/wms', {
+     var wms_ror_central_offices = L.tileLayer.wms('http://www.broadbandmap.gov/geoserver/wms', {
          format: 'image/png',
          transparent: true,
-         layers: 'geo_swat:ror_co'
+         layers: 'fcc:ror_co'
      }); 
 
      L.control.scale({
@@ -138,9 +138,10 @@ var yNow;
 			var lng = e.latlng.lng;		
 
 			//SA
-			//var urlPolySA = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sa&maxFeatures=1&outputFormat=text/javascript&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
-			var urlPolySA = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sa&maxFeatures=1&outputFormat=text/javascript&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))&format_options=callback:callbackSA";
-			//var urlPolySA = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sa&maxFeatures=1&outputFormat=application/json&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
+			//var urlPolySA = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sa&maxFeatures=1&outputFormat=text/javascript&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
+			//var urlPolySA = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sa&maxFeatures=1&outputFormat=text/javascript&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))&format_options=callback:callbackSA";
+			var urlPolySA = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sa&maxFeatures=1&outputFormat=json&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
+			//var urlPolySA = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sa&maxFeatures=1&outputFormat=application/json&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
 
 			isInsidePoly = false;
 			if (map.hasLayer(shownPolySA)) {
@@ -157,8 +158,9 @@ var yNow;
 				$.ajax({
 					type: "GET",
 					url: urlPolySA,
-					dataType: "jsonp",
-					jsonpCallback: "callbackSA",
+					dataType: "json",
+					//dataType: "jsonp",
+					//jsonpCallback: "callbackSA",
 					success: function(dataSA) {
 						//console.log('hoverPoly sa');
 						hoverPoly(dataSA, 'sa');
@@ -269,15 +271,17 @@ function hoverPoly(data, type) {
 				
 				//console.log('ajax urlPolySAC');
 				
-				//var urlPolySAC = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sac&maxFeatures=1&outputFormat=text/javascript&cql_filter=sac="+ sac;
-				var urlPolySAC = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sac&maxFeatures=1&outputFormat=text/javascript&cql_filter=sac="+ sac +"&format_options=callback:callbackSAC";
-				//var urlPolySAC = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sac&maxFeatures=1&outputFormat=application/json&cql_filter=sac="+sac;
+				//var urlPolySAC = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sac&maxFeatures=1&outputFormat=text/javascript&cql_filter=sac="+ sac;
+				//var urlPolySAC = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sac&maxFeatures=1&outputFormat=text/javascript&cql_filter=sac="+ sac +"&format_options=callback:callbackSAC";
+				var urlPolySAC = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sac&maxFeatures=10&outputFormat=json&cql_filter=sac="+ sac +"";
+				//var urlPolySAC = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sac&maxFeatures=1&outputFormat=application/json&cql_filter=sac="+sac;
 
 				$.ajax({
 					type: "GET",
 					url: urlPolySAC,
-					dataType: "jsonp",
-					jsonpCallback: "callbackSAC",
+					dataType: "json",
+					//dataType: "jsonp",
+					//jsonpCallback: "callbackSAC",
 					success: function(dataSAC) {
 						hoverPoly(dataSAC, 'sac');						
 					}
@@ -461,13 +465,15 @@ function hoverPoly(data, type) {
     $( "#input-sac" ).autocomplete({
         source: function( request, response ) {
 			var sac = request.term;
-			var url = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=geo_swat:ror_sac&count=10&propertyName=sac&outputFormat=text/javascript&sortBy=sac&cql_filter=sac+like+'" + sac + "%25'&format_options=callback:callbackAutoComp";
+			//var urlAutoComp = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=fcc:ror_sac&count=10&propertyName=sac&outputFormat=text/javascript&sortBy=sac&cql_filter=sac+like+'" + sac + "%25'&format_options=callback:callbackAutoComp";
+			var urlAutoComp = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=fcc:ror_sac&count=10&propertyName=sac&outputFormat=json&sortBy=sac&cql_filter=sac+like+'" + sac + "%25'";
 
 			$.ajax({
 				type: "GET",
-				url: url,
-				dataType: "jsonp",
-				jsonpCallback: "callbackAutoComp",
+				url: urlAutoComp,
+				dataType: "json",
+				//dataType: "jsonp",
+				//jsonpCallback: "callbackAutoComp",
 				success: function( data ) {
 					var features = data.features;
 					sac_list = [];
@@ -557,23 +563,16 @@ function searchedPoly(data){
 function searchSAC() {
 
 	var sac = $("#input-sac").val();
-	var urlSearch = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sac&maxFeatures=1&outputFormat=text/javascript&cql_filter=sac="+ sac +"&format_options=callback:callbackSearch";
+	//var urlSearch = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sac&maxFeatures=1&outputFormat=text/javascript&cql_filter=sac="+ sac +"&format_options=callback:callbackSearch";
+	var urlSearch = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sac&maxFeatures=1&outputFormat=json&cql_filter=sac="+ sac +"";
 	
 	$.ajax({
 		type: "GET",
 		url: urlSearch,
-		dataType: "jsonp",
-		jsonpCallback: "callbackSearch",
-		success: function( data ) {
-
-			/*
-			var bbox = data.bbox;
-			var southWest = L.latLng(bbox[0], bbox[1]),
-			northEast = L.latLng(bbox[2], bbox[3]),
-			bounds = L.latLngBounds(southWest, northEast);			
-			map.fitBounds(bounds);
-			*/
-			
+		dataType: "json",
+		//dataType: "jsonp",
+		//jsonpCallback: "callbackSearch",
+		success: function( data ) {			
 			searchedPoly(data);			
 		}
 	});
@@ -671,8 +670,8 @@ function downloadFile(e) {
 	
 		selVal = 'all';
 		
-		urlPoly = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sa&maxFeatures=10000&outputFormat=" + outputFormat;		
-		urlPoint = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_co&maxFeatures=10000&outputFormat=" + outputFormat;
+		urlPoly = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sa&maxFeatures=10000&outputFormat=" + outputFormat;		
+		urlPoint = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_co&maxFeatures=10000&outputFormat=" + outputFormat;
     }
 	else if (selected == "selected") {
         var sac_tuple = "(";
@@ -690,8 +689,8 @@ function downloadFile(e) {
         sac_tuple = sac_tuple.replace(/,$/, "");
         sac_tuple += ")";	
 
-        urlPoly = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_sa&maxFeatures=10000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
-        urlPoint = "http://ldevtm-geo02:8080/geoserver/geo_swat/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=geo_swat:ror_co&maxFeatures=10000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
+        urlPoly = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_sa&maxFeatures=10000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
+        urlPoint = "http://www.broadbandmap.gov/geoserver/fcc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=fcc:ror_co&maxFeatures=10000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
     }	
 	
 	var zip = new JSZip();
