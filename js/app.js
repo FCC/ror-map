@@ -7,15 +7,15 @@
                                  /_/            
 */
 
-/*
 var geo_host = 'http://www.broadbandmap.gov';
 var geo_space = 'fcc';
 var geo_output = 'json'
-*/
 
+/*
 var geo_host = 'http://ldevtm-geo02:8080';
 var geo_space = 'geo_swat';
 var geo_output = 'application/json'
+*/
 
 var map;
 var shownPolySAC;
