@@ -11,13 +11,15 @@
    Global
    ========================================================================== */
 
+ /*
 @media (min-width: 1200px) {
   .container { max-width: 900px; }
 }
 @media (min-width: 900px) {
   .container { max-width: 900px; }
 }   
-.container { max-width: 900px; }
+*/
+.container { width: 930px; }
       
 body { color: #333; font-family: Arial, Helvetica, sans-serif;}
 main { margin-top: 20px; }
