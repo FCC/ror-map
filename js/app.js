@@ -7,7 +7,7 @@
                                  /_/            
 */
 
-var geo_host = 'http://www.broadbandmap.gov';
+var geo_host = '//www.broadbandmap.gov';
 var geo_space = 'fcc';
 var geo_output = 'json'
 
