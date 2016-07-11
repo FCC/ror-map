@@ -7,15 +7,9 @@
                                  /_/            
 */
 
-var geo_host = '//www.broadbandmap.gov';
+var geo_host = 'https://geo.fcc.gov';
 var geo_space = 'fcc';
-var geo_output = 'json'
-
-/*
-var geo_host = 'http://ldevtm-geo02:8080';
-var geo_space = 'geo_swat';
-var geo_output = 'application/json'
-*/
+var geo_output = 'application/json';
 
 var map;
 var shownPolySAC;
@@ -78,19 +72,19 @@ var yNow;
      baseSatellite = L.mapbox.tileLayer('fcc.k74d7n0g');
      baseTerrain = L.mapbox.tileLayer('fcc.k74cm3ol');
 
-     var wms_ror_sa = L.tileLayer.wms(geo_host +'/geoserver/wms', {
+     var wms_ror_sa = L.tileLayer.wms(geo_host +'/wms', {
          format: 'image/png',
          transparent: true,
          layers: geo_space +':ror_sa'
      });
 
-     var wms_ror_sac = L.tileLayer.wms(geo_host +'/geoserver/wms', {
+     var wms_ror_sac = L.tileLayer.wms(geo_host +'/wms', {
          format: 'image/png',
          transparent: true,
          layers: geo_space +':ror_sac'
      });
      
-     var wms_ror_co = L.tileLayer.wms(geo_host +'/geoserver/wms', {
+     var wms_ror_co = L.tileLayer.wms(geo_host +'/wms', {
          format: 'image/png',
          transparent: true,
          layers: geo_space +':ror_co'
@@ -141,7 +135,7 @@ var yNow;
 
 			//SA
 			//var urlPolySA = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sa&maxFeatures=1&outputFormat="+ geo_output +"&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))&format_options=callback:callbackSA";
-			var urlPolySA = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sa&maxFeatures=1&outputFormat="+ geo_output +"&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
+			var urlPolySA = geo_host +"/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sa&maxFeatures=1&outputFormat="+ geo_output +"&cql_filter=contains(geom,%20POINT(" + lng + " " + lat + "))";
 
 			isInsidePoly = false;
 			if (map.hasLayer(shownPolySA)) {
@@ -156,9 +150,7 @@ var yNow;
 				$.ajax({
 					type: "GET",
 					url: urlPolySA,
-					dataType: "json",
-					//dataType: "jsonp",
-					//jsonpCallback: "callbackSA",
+					dataType: "json",					
 					success: function(dataSA) {
 						//console.log('hoverPoly sa');
 						hoverPoly(dataSA, 'sa');
@@ -266,14 +258,12 @@ function hoverPoly(data, type) {
 			if (codeNowSAC != codeNowSA) {	
 
 				//var urlPolySAC = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sac&maxFeatures=1&outputFormat="+ geo_output +"&cql_filter=sac="+ sac +"&format_options=callback:callbackSAC";
-				var urlPolySAC = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sac&maxFeatures=10&outputFormat="+ geo_output +"&cql_filter=sac="+ sac +"";
+				var urlPolySAC = geo_host +"/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sac&maxFeatures=10&outputFormat="+ geo_output +"&cql_filter=sac="+ sac +"";
 
 				$.ajax({
 					type: "GET",
 					url: urlPolySAC,
-					dataType: "json",
-					//dataType: "jsonp",
-					//jsonpCallback: "callbackSAC",
+					dataType: "json",					
 					success: function(dataSAC) {
 						hoverPoly(dataSAC, 'sac');						
 					}
@@ -458,14 +448,12 @@ function hoverPoly(data, type) {
         source: function( request, response ) {
 			var sac = request.term;
 			//var urlAutoComp = geo_host +"/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName="+ geo_space +":ror_sac&count=10&propertyName=sac&outputFormat="+ geo_output +"&sortBy=sac&cql_filter=sac+like+'" + sac + "%25'&format_options=callback:callbackAutoComp";
-			var urlAutoComp = geo_host +"/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName="+ geo_space +":ror_sac&count=10&propertyName=sac&outputFormat="+ geo_output +"&sortBy=sac&cql_filter=sac+like+'" + sac + "%25'";
+			var urlAutoComp = geo_host +"/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName="+ geo_space +":ror_sac&count=10&propertyName=sac&outputFormat="+ geo_output +"&sortBy=sac&cql_filter=sac+like+'" + sac + "%25'";
 
 			$.ajax({
 				type: "GET",
 				url: urlAutoComp,
-				dataType: "json",
-				//dataType: "jsonp",
-				//jsonpCallback: "callbackAutoComp",
+				dataType: "json",				
 				success: function( data ) {
 					var features = data.features;
 					sac_list = [];
@@ -556,14 +544,12 @@ function searchSAC() {
 
 	var sac = $("#input-sac").val();
 	//var urlSearch = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sac&maxFeatures=1&outputFormat="+ geo_output +"&cql_filter=sac="+ sac +"&format_options=callback:callbackSearch";
-	var urlSearch = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sac&maxFeatures=1&outputFormat="+ geo_output +"&cql_filter=sac="+ sac +"";
+	var urlSearch = geo_host +"/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sac&maxFeatures=1&outputFormat="+ geo_output +"&cql_filter=sac="+ sac +"";
 	
 	$.ajax({
 		type: "GET",
 		url: urlSearch,
-		dataType: "json",
-		//dataType: "jsonp",
-		//jsonpCallback: "callbackSearch",
+		dataType: "json",		
 		success: function( data ) {			
 			searchedPoly(data);			
 		}
@@ -689,8 +675,8 @@ function downloadFile(e) {
 	
 		selVal = 'all';
 		
-		urlPoly = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sa&maxFeatures=100000&outputFormat=" + outputFormat;		
-		urlPoint = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_co&maxFeatures=100000&outputFormat=" + outputFormat;
+		urlPoly = geo_host +"/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sa&maxFeatures=100000&outputFormat=" + outputFormat;		
+		urlPoint = geo_host +"/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_co&maxFeatures=100000&outputFormat=" + outputFormat;
     }
 	else if (selected == "selected") {
         var sac_tuple = "(";
@@ -708,10 +694,10 @@ function downloadFile(e) {
         sac_tuple = sac_tuple.replace(/,$/, "");
         sac_tuple += ")";	
 
-        urlPoly = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sa&maxFeatures=100000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
-        urlPoint = geo_host +"/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_co&maxFeatures=100000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
+        urlPoly = geo_host +"/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_sa&maxFeatures=100000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
+        urlPoint = geo_host +"/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="+ geo_space +":ror_co&maxFeatures=100000&outputFormat=" + outputFormat + "&cql_filter=sac+IN+" + sac_tuple;
     }	
-	
+
 	var zip = new JSZip();
 	
 	var statusPoly = false;
