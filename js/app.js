@@ -74,9 +74,9 @@ L.mapbox.styleLayer('mapbox://styles/mapbox/light-v10').addTo(map);
 
      map.attributionControl.addAttribution('<a href="http://fcc.gov/maps">FCC Maps</a>');
 
-     baseStreet = L.mapbox.tileLayer('fcc.k74ed5ge').addTo(map);
-     baseSatellite = L.mapbox.tileLayer('fcc.k74d7n0g');
-     baseTerrain = L.mapbox.tileLayer('fcc.k74cm3ol');
+     baseStreet = L.mapbox.styleLayer('mapbox://styles/mapbox/light-v10');
+     baseSatellite = L.mapbox.styleLayer('mapbox://styles/mapbox/satellite-v9');
+     baseTerrain = L.mapbox.styleLayer('mapbox://styles/mapbox/outdoors-v11');
 
      var wms_ror_sa = L.tileLayer.wms(geo_host +'/wms', {
          format: 'image/png',
